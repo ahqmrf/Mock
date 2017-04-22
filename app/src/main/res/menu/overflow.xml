@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+    <item
+        android:id="@+id/menu_item_contact"
+        android:title="@string/contact_us"
+        app:showAsAction="never"
+        tools:ignore="MenuTitle"/>
+
+    <item
+        android:id="@+id/menu_item_feedback"
+        android:title="@string/feedback"
+        app:showAsAction="never"
+        tools:ignore="MenuTitle"/>
+
+    <item
+        android:id="@+id/menu_item_logout"
+        android:title="@string/logout"
+        app:showAsAction="never"
+        tools:ignore="MenuTitle"/>
+
+</menu>

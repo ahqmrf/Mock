@@ -58,6 +58,8 @@
             android:textColor="@color/white"
             android:gravity="center"
             tools:text="2"
+            tools:visibility="visible"
+            android:visibility="gone"
             android:background="@drawable/circular_red_bg"/>
 
     </RelativeLayout>

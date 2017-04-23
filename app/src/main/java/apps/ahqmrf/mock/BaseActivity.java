@@ -18,14 +18,15 @@ import butterknife.BindView;
 
 public abstract class BaseActivity extends AppCompatActivity {
 
-    @Nullable @BindView(R.id.app_toolbar) protected Toolbar toolbar;
+    @Nullable
+    @BindView(R.id.app_toolbar)
+    protected Toolbar toolbar;
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
-
     }
 
     protected void setToolbarWithBackArrow() {
@@ -69,6 +70,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     protected abstract void setToolbarTitle();
+
     protected abstract void onViewCreated();
 
 }

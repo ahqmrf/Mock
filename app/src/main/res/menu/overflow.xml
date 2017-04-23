@@ -2,15 +2,23 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
+
     <item
-        android:id="@+id/menu_item_contact"
-        android:title="@string/contact_us"
+        android:id="@+id/menu_item_search"
+        android:title="@string/search"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_search_white_24dp"
+        tools:ignore="MenuTitle"/>
+
+    <item
+        android:id="@+id/menu_item_settings"
+        android:title="@string/settings"
         app:showAsAction="never"
         tools:ignore="MenuTitle"/>
 
     <item
-        android:id="@+id/menu_item_feedback"
-        android:title="@string/feedback"
+        android:id="@+id/menu_item_help"
+        android:title="@string/help"
         app:showAsAction="never"
         tools:ignore="MenuTitle"/>
 

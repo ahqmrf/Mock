@@ -14,7 +14,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
-        <activity android:name=".activity.MyLocationActivity">
+        <activity
+            android:name=".activity.MyLocationActivity"
+            android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -25,6 +27,10 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyBKKIsByeEFAgfkbwe5RTv239D0t8cHMw8" />
+
+        <activity
+            android:name=".activity.FriendsListActivity"
+            android:launchMode="singleTask" />
     </application>
 
 </manifest>

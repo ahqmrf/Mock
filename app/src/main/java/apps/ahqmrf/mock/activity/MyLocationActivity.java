@@ -3,6 +3,8 @@ package apps.ahqmrf.mock.activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Build;
@@ -29,6 +31,12 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
 
 import apps.ahqmrf.mock.BaseActivity;
 import apps.ahqmrf.mock.R;
@@ -40,8 +48,10 @@ import butterknife.ButterKnife;
 public class MyLocationActivity extends BaseActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
-    @BindString(R.string.title_my_location) String title;
-    @BindView(R.id.layout_progress)         View progressLayout;
+    @BindString(R.string.title_my_location)
+    String title;
+    @BindView(R.id.layout_progress)
+    View progressLayout;
 
     private GoogleMap mGoogleMap;
     private GoogleApiClient mGoogleApiClient;
@@ -51,12 +61,19 @@ public class MyLocationActivity extends BaseActivity implements OnMapReadyCallba
     private Location mLastLocation;
     private Marker mCurrLocationMarker;
     private LocationManager locationManager;
+    private FirebaseDatabase database = FirebaseDatabase.getInstance();
+    DatabaseReference location = database.getReference("location").child("ahqmrf");
+    private DatabaseReference refLat = location.child("latitude");
+    private DatabaseReference refLng = location.child("longitude");
+    private DatabaseReference refState = location.child("state");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_location);
         ButterKnife.bind(this);
+        setBottomIconDefaultColor();
+        mImageLocation.setColorFilter(ContextCompat.getColor(this, R.color.colorPrimary));
         setToolbarWithBackArrow();
     }
 
@@ -78,7 +95,9 @@ public class MyLocationActivity extends BaseActivity implements OnMapReadyCallba
 
         mapFrag = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFrag.getMapAsync(this);
+
     }
+
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -145,9 +164,21 @@ public class MyLocationActivity extends BaseActivity implements OnMapReadyCallba
 
         //Place current location marker
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+        refLat.setValue(location.getLatitude());
+        refLng.setValue(location.getLongitude());
+        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+        List<Address> addresses = null;
+        try {
+            addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        String stateName = addresses.get(0).getAddressLine(1);
+        refState.setValue(stateName);
+
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(latLng);
-        markerOptions.title("Me"); // will be changed to user name
+        markerOptions.title("Me"); // will be changed to location name
         markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
         mCurrLocationMarker = mGoogleMap.addMarker(markerOptions);
 
@@ -182,13 +213,6 @@ public class MyLocationActivity extends BaseActivity implements OnMapReadyCallba
         alert.show();
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        if (mGoogleApiClient != null) {
-            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
-        }
-    }
 
     public boolean checkLocationPermission() {
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -231,7 +255,7 @@ public class MyLocationActivity extends BaseActivity implements OnMapReadyCallba
                 } else {
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
-                    Toast.makeText(this, "permission denied", Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, "Permission denied", Toast.LENGTH_LONG).show();
                 }
             }
             // other 'case' lines to check for other

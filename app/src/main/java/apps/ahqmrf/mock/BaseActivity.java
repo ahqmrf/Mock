@@ -13,6 +13,8 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
 
+import apps.ahqmrf.mock.activity.FriendsListActivity;
+import apps.ahqmrf.mock.activity.MyLocationActivity;
 import butterknife.BindView;
 import butterknife.OnClick;
 
@@ -31,8 +33,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     @OnClick(R.id.image_my_location)
     public void showMyLocation() {
-        setBottomIconDefaultColor();
-        mImageLocation.setColorFilter(ContextCompat.getColor(this, R.color.colorPrimary));
+        trigger(MyLocationActivity.class);
     }
 
     @BindView(R.id.image_map)
@@ -49,8 +50,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     @OnClick(R.id.image_friends)
     public void showFriends() {
-        setBottomIconDefaultColor();
-        mImageFriends.setColorFilter(ContextCompat.getColor(this, R.color.colorPrimary));
+        trigger(FriendsListActivity.class);
     }
 
     @BindView(R.id.image_notification)
@@ -109,6 +109,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         if (!this.getClass().equals(activityClass)) {
             Intent intent = new Intent(this, activityClass);
             startActivity(intent);
+            overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
         }
     }
 

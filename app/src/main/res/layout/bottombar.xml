@@ -1,68 +1,82 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="?attr/actionBarSize"
     xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
     android:layout_gravity="bottom"
-    android:background="@color/colorPrimary"
-    android:orientation="horizontal"
-    android:weightSum="4">
+    android:background="@color/white"
+    android:orientation="vertical">
 
-    <ImageView
-        style="@style/ClickableView.BottomBarIconStyle"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:src="@drawable/ic_my_location_black_24dp"
-        android:tint="@color/white" />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="@color/whitey_grey"/>
 
-    <ImageView
-        style="@style/ClickableView.BottomBarIconStyle"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:src="@drawable/ic_map_black_24dp"
-        android:tint="@color/white" />
-
-    <ImageView
-        style="@style/ClickableView.BottomBarIconStyle"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:src="@drawable/ic_people_black_24dp"
-        android:tint="@color/white" />
-
-    <RelativeLayout
-        android:id="@+id/view_notification"
-        style="@style/ClickableView"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:orientation="horizontal"
+        android:weightSum="4">
 
         <ImageView
-            android:id="@+id/image_notification"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_centerInParent="true"
-            android:src="@drawable/ic_notifications_black_24dp"
-            android:tint="@color/white" />
+            android:id="@+id/image_my_location"
+            style="@style/ClickableView.BottomBarIconStyle"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:src="@drawable/ic_my_location_black_24dp"
+            android:tint="@color/colorPrimary" />
 
-        <TextView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_toEndOf="@id/image_notification"
-            android:layout_toRightOf="@id/image_notification"
-            android:layout_marginLeft="-12dp"
-            android:layout_alignParentTop="true"
-            android:textSize="12sp"
-            android:textColor="@color/white"
-            android:gravity="center"
-            tools:text="2"
-            tools:visibility="visible"
-            android:visibility="gone"
-            android:background="@drawable/circular_red_bg"/>
+        <ImageView
+            android:id="@+id/image_map"
+            style="@style/ClickableView.BottomBarIconStyle"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:src="@drawable/ic_map_black_24dp"
+            android:tint="@color/black" />
 
-    </RelativeLayout>
+        <ImageView
+            android:id="@+id/image_friends"
+            style="@style/ClickableView.BottomBarIconStyle"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:src="@drawable/ic_people_black_24dp"
+            android:tint="@color/black" />
+
+        <RelativeLayout
+            android:id="@+id/view_notification"
+            style="@style/ClickableView"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <ImageView
+                android:id="@+id/image_notification"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_centerInParent="true"
+                android:src="@drawable/ic_notifications_black_24dp"
+                android:tint="@color/black" />
+
+            <TextView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_alignParentTop="true"
+                android:layout_marginLeft="-12dp"
+                android:layout_toEndOf="@id/image_notification"
+                android:layout_toRightOf="@id/image_notification"
+                android:background="@drawable/circular_red_bg"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                android:visibility="gone"
+                tools:text="2"
+                tools:visibility="visible" />
+
+        </RelativeLayout>
+    </LinearLayout>
 
 
 </LinearLayout>

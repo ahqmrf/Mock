@@ -16,6 +16,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -104,6 +105,41 @@ public class MyLocationActivity extends BaseActivity implements OnMapReadyCallba
         mGoogleMap = googleMap;
         if (mGoogleMap == null) Log.e("", "");
         mGoogleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+        if(mGoogleMap != null) {
+            mGoogleMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+                @Override
+                public View getInfoWindow(Marker marker) {
+                    View v = getLayoutInflater().inflate(R.layout.info_window, null);
+                    TextView lat = (TextView) v.findViewById(R.id.text_lat);
+                    TextView lng = (TextView) v.findViewById(R.id.text_lng);
+                    TextView address = (TextView) v.findViewById(R.id.text_address);
+                    TextView locality = (TextView) v.findViewById(R.id.text_locality);
+                    TextView country = (TextView) v.findViewById(R.id.text_country);
+
+                    LatLng latLng = marker.getPosition();
+                    lat.setText("Latitude: " + latLng.latitude);
+                    lng.setText("Longitude: " + latLng.longitude);
+                    Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
+                    try {
+                        List<Address> addresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1);
+                        Address obj = addresses.get(0);
+                        address.setText(obj.getAddressLine(0));
+                        locality.setText(obj.getLocality());
+                        country.setText(obj.getCountryName());
+
+
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    return v;
+                }
+
+                @Override
+                public View getInfoContents(Marker marker) {
+                    return null;
+                }
+            });
+        }
 
         //Initialize Google Play Services
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -167,14 +203,17 @@ public class MyLocationActivity extends BaseActivity implements OnMapReadyCallba
         refLat.setValue(location.getLatitude());
         refLng.setValue(location.getLongitude());
         Geocoder geocoder = new Geocoder(this, Locale.getDefault());
-        List<Address> addresses = null;
         try {
-            addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+            List<Address> addresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1);
+            Address obj = addresses.get(0);
+            String add = obj.getAddressLine(0);
+            add = add + ", " + obj.getLocality();
+            add = add + ", " + obj.getCountryName();
+
+            refState.setValue(add);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        String stateName = addresses.get(0).getAddressLine(1);
-        refState.setValue(stateName);
 
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(latLng);
@@ -187,9 +226,9 @@ public class MyLocationActivity extends BaseActivity implements OnMapReadyCallba
         mGoogleMap.animateCamera(CameraUpdateFactory.zoomTo(11));
 
         //stop location updates
-        if (mGoogleApiClient != null) {
+        /*if (mGoogleApiClient != null) {
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
-        }
+        }*/
     }
 
     private void showGPSDisabledAlertToUser() {

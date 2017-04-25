@@ -115,8 +115,10 @@ public class MyLocationActivity extends BaseActivity implements OnMapReadyCallba
                     TextView country = (TextView) v.findViewById(R.id.text_country);
 
                     LatLng latLng = marker.getPosition();
-                    lat.setText("Latitude: " + latLng.latitude);
-                    lng.setText("Longitude: " + latLng.longitude);
+                    String latStr = "Latitude: " + latLng.latitude;
+                    lat.setText(latStr);
+                    String lngStr = "Longitude: " + latLng.longitude;
+                    lng.setText(lngStr);
                     Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
                     try {
                         List<Address> addresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1);
@@ -197,12 +199,14 @@ public class MyLocationActivity extends BaseActivity implements OnMapReadyCallba
         Geocoder geocoder = new Geocoder(this, Locale.getDefault());
         try {
             List<Address> addresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1);
-            Address obj = addresses.get(0);
-            String add = obj.getAddressLine(0);
-            add = add + ", " + obj.getLocality();
-            add = add + ", " + obj.getCountryName();
+            if(addresses != null && addresses.size() > 0) {
+                Address obj = addresses.get(0);
+                String add = obj.getAddressLine(0);
+                add = add + ", " + obj.getLocality();
+                add = add + ", " + obj.getCountryName();
 
-            refState.setValue(add);
+                refState.setValue(add);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -17,11 +17,7 @@
         <activity
             android:name=".activity.MyLocationActivity"
             android:launchMode="singleTask">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
 
         <meta-data
@@ -31,6 +27,13 @@
         <activity
             android:name=".activity.FriendsListActivity"
             android:launchMode="singleTask" />
+        <activity android:name=".activity.SignInActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

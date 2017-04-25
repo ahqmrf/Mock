@@ -49,24 +49,22 @@ import butterknife.ButterKnife;
 public class MyLocationActivity extends BaseActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
-    @BindString(R.string.title_my_location)
-    String title;
-    @BindView(R.id.layout_progress)
-    View progressLayout;
+    @BindString(R.string.title_my_location) String title;
+    @BindView(R.id.layout_progress)         View   progressLayout;
 
-    private GoogleMap mGoogleMap;
-    private GoogleApiClient mGoogleApiClient;
+    private GoogleMap          mGoogleMap;
+    private GoogleApiClient    mGoogleApiClient;
     private SupportMapFragment mapFrag;
-    private boolean shouldRefreshMap = true;
-    private LocationRequest mLocationRequest;
-    private Location mLastLocation;
-    private Marker mCurrLocationMarker;
-    private LocationManager locationManager;
-    private FirebaseDatabase database = FirebaseDatabase.getInstance();
-    DatabaseReference location = database.getReference("location").child("ahqmrf");
-    private DatabaseReference refLat = location.child("latitude");
-    private DatabaseReference refLng = location.child("longitude");
-    private DatabaseReference refState = location.child("state");
+    private LocationRequest    mLocationRequest;
+    private Location           mLastLocation;
+    private Marker             mCurrLocationMarker;
+    private LocationManager    locationManager;
+    private FirebaseDatabase  database         = FirebaseDatabase.getInstance();
+    private boolean           shouldRefreshMap = true;
+    private DatabaseReference location         = database.getReference("location").child("ahqmrf");
+    private DatabaseReference refLat           = location.child("latitude");
+    private DatabaseReference refLng           = location.child("longitude");
+    private DatabaseReference refState         = location.child("state");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,7 +103,7 @@ public class MyLocationActivity extends BaseActivity implements OnMapReadyCallba
         mGoogleMap = googleMap;
         if (mGoogleMap == null) Log.e("", "");
         mGoogleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-        if(mGoogleMap != null) {
+        if (mGoogleMap != null) {
             mGoogleMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
                 @Override
                 public View getInfoWindow(Marker marker) {
@@ -193,12 +191,6 @@ public class MyLocationActivity extends BaseActivity implements OnMapReadyCallba
 
     @Override
     public void onLocationChanged(Location location) {
-        mLastLocation = location;
-        if (mCurrLocationMarker != null) {
-            mCurrLocationMarker.remove();
-        }
-
-        //Place current location marker
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
         refLat.setValue(location.getLatitude());
         refLng.setValue(location.getLongitude());
@@ -215,6 +207,16 @@ public class MyLocationActivity extends BaseActivity implements OnMapReadyCallba
             e.printStackTrace();
         }
 
+        mLastLocation = location;
+
+        if (mCurrLocationMarker != null) {
+            // Change marker position
+            mCurrLocationMarker.setPosition(latLng);
+            return;
+        }
+
+        //No marker added yet, add a marker and set current location to the marker
+
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(latLng);
         markerOptions.title("Me"); // will be changed to location name
@@ -225,8 +227,8 @@ public class MyLocationActivity extends BaseActivity implements OnMapReadyCallba
         mGoogleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
         mGoogleMap.animateCamera(CameraUpdateFactory.zoomTo(11));
 
-        //stop location updates
-        /*if (mGoogleApiClient != null) {
+        /*//stop location updates
+        if (mGoogleApiClient != null) {
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
         }*/
     }

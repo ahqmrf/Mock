@@ -9,4 +9,9 @@
     <string name="title_my_location">My Location</string>
     <string name="title_my_friends">My Friends</string>
     <string name="title_sign_in">Sign in</string>
+    <string name="label_email">Email</string>
+    <string name="label_password">Password</string>
+    <string name="button_sign_in">Sign in</string>
+    <string name="label_remember_me">Remember me</string>
+    <string name="link_forgot_password">Forgot your password?</string>
 </resources>

@@ -2,8 +2,88 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:focusableInTouchMode="true"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="32dp">
 
+    <TextView
+        style="@style/Label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/label_email" />
+
+    <EditText
+        android:id="@+id/input_email"
+        style="@style/InputField"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textEmailAddress" />
+
+    <TextView
+        style="@style/Label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/label_password" />
+
+    <EditText
+        android:id="@+id/input_password"
+        style="@style/InputField"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textPassword" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginTop="8dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <CheckBox
+            android:id="@+id/checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:checked="false" />
+
+        <TextView
+            style="@style/Label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/checkbox"
+            android:text="@string/label_remember_me" />
+
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/text_forgot_password"
+        style="@style/ClickableView"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:gravity="center_vertical"
+        android:padding="8dp"
+        android:text="@string/link_forgot_password"
+        android:textColor="@color/colorPrimaryDark" />
+
+    <Button
+        android:id="@+id/button_sign_in"
+        style="@style/ButtonStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/button_sign_in" />
+
+    <TextView
+        android:id="@+id/text_register"
+        android:layout_marginTop="16dp"
+        style="@style/Label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="40dp"
+        android:gravity="center" />
 
 </LinearLayout>

@@ -122,10 +122,12 @@ public class MyLocationActivity extends BaseActivity implements OnMapReadyCallba
                     Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
                     try {
                         List<Address> addresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1);
-                        Address obj = addresses.get(0);
-                        address.setText(obj.getAddressLine(0));
-                        locality.setText(obj.getLocality());
-                        country.setText(obj.getCountryName());
+                        if (addresses != null && addresses.size() > 0) {
+                            Address obj = addresses.get(0);
+                            address.setText(obj.getAddressLine(0));
+                            locality.setText(obj.getLocality());
+                            country.setText(obj.getCountryName());
+                        }
 
 
                     } catch (IOException e) {
@@ -199,7 +201,7 @@ public class MyLocationActivity extends BaseActivity implements OnMapReadyCallba
         Geocoder geocoder = new Geocoder(this, Locale.getDefault());
         try {
             List<Address> addresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1);
-            if(addresses != null && addresses.size() > 0) {
+            if (addresses != null && addresses.size() > 0) {
                 Address obj = addresses.get(0);
                 String add = obj.getAddressLine(0);
                 add = add + ", " + obj.getLocality();

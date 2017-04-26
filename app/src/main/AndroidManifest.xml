@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="apps.ahqmrf.mock">
+          package="apps.ahqmrf.mock">
 
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
 
     <application
         android:allowBackup="true"
@@ -17,22 +17,23 @@
         <activity
             android:name=".activity.MyLocationActivity"
             android:launchMode="singleTask">
-
         </activity>
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyBKKIsByeEFAgfkbwe5RTv239D0t8cHMw8" />
+            android:value="AIzaSyBKKIsByeEFAgfkbwe5RTv239D0t8cHMw8"/>
 
         <activity
             android:name=".activity.FriendsListActivity"
-            android:launchMode="singleTask" />
+            android:launchMode="singleTask"/>
         <activity android:name=".activity.SignInActivity">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.MAIN"/>
 
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+        </activity>
+        <activity android:name=".activity.RegisterActivity">
         </activity>
     </application>
 

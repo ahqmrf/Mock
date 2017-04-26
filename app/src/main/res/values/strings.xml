@@ -9,9 +9,16 @@
     <string name="title_my_location">My Location</string>
     <string name="title_my_friends">My Friends</string>
     <string name="title_sign_in">Sign in</string>
+    <string name="title_register">Register</string>
     <string name="label_email">Email</string>
     <string name="label_password">Password</string>
     <string name="button_sign_in">Sign in</string>
     <string name="label_remember_me">Remember me</string>
     <string name="link_forgot_password">Forgot your password?</string>
+    <string name="button_register">Register</string>
+    <string name="label_full_name">Full name</string>
+    <string name="label_username">Username</string>
+    <string name="label_confirm_password">Confirm password</string>
+    <string name="label_prompt_security_ques">Choose a security question</string>
+    <string name="label_security_ques_ans">Answer for the chosen question:</string>
 </resources>

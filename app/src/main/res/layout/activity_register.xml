@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/activity_sign_in"
+    android:id="@+id/activity_reg"
     >
 
     <android.support.design.widget.AppBarLayout
@@ -24,12 +24,12 @@
             app:expandedTitleTextAppearance="@style/CollapsingToolBarTextAppearance"
             app:layout_scrollFlags="scroll|exitUntilCollapsed|snap">
 
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="200dp"
-                    app:layout_collapseMode="parallax"
-                    android:scaleType="fitXY"
-                    android:src="@drawable/auth_banner"/>
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                app:layout_collapseMode="parallax"
+                android:scaleType="fitXY"
+                android:src="@drawable/reg_banner"/>
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/app_toolbar"
@@ -50,7 +50,7 @@
         android:focusableInTouchMode="true"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <include layout="@layout/layout_sign_in"/>
+        <include layout="@layout/layout_register"/>
     </android.support.v4.widget.NestedScrollView>
 
 </android.support.design.widget.CoordinatorLayout>

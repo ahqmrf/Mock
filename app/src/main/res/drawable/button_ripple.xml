@@ -5,7 +5,7 @@
             <stroke
                 android:width="2dp"
                 android:color="@color/colorPrimary" />
-            <solid android:color="@color/dark_blue" />
+            <solid android:color="@color/colorPrimaryDark" />
         </shape>
     </item>
     <item android:state_focused="true">
@@ -22,8 +22,8 @@
             <padding android:padding="1dp" />
             <stroke
                 android:width="2dp"
-                android:color="@color/colorPrimary" />
-            <solid android:color="@color/colorPrimaryDark" />
+                android:color="@color/colorPrimaryTransparent" />
+            <solid android:color="@color/colorPrimary" />
         </shape>
     </item>
 </selector>

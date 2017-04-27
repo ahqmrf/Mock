@@ -41,8 +41,6 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     @OnClick(R.id.image_map)
     public void showMap() {
-        setBottomIconDefaultColor();
-        mImageMap.setColorFilter(ContextCompat.getColor(this, R.color.colorPrimary));
     }
 
     @BindView(R.id.image_friends)
@@ -61,8 +59,6 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     @OnClick(R.id.view_notification)
     public void showNotification() {
-        setBottomIconDefaultColor();
-        mImageNotification.setColorFilter(ContextCompat.getColor(this, R.color.colorPrimary));
     }
 
     @Override
@@ -111,13 +107,6 @@ public abstract class BaseActivity extends AppCompatActivity {
             startActivity(intent);
             overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
         }
-    }
-
-    protected void setBottomIconDefaultColor() {
-        mImageLocation.setColorFilter(ContextCompat.getColor(this, R.color.black));
-        mImageMap.setColorFilter(ContextCompat.getColor(this, R.color.black));
-        mImageFriends.setColorFilter(ContextCompat.getColor(this, R.color.black));
-        mImageNotification.setColorFilter(ContextCompat.getColor(this, R.color.black));
     }
 
     protected abstract void setToolbarTitle();

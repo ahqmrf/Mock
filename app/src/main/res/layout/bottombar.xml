@@ -25,7 +25,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:src="@drawable/ic_my_location_black_24dp"
-            android:tint="@color/colorPrimary" />
+            android:tint="@color/black" />
 
         <ImageView
             android:id="@+id/image_map"

@@ -51,6 +51,7 @@ public class MyLocationActivity extends BaseActivity implements OnMapReadyCallba
 
     @BindString(R.string.title_my_location) String title;
     @BindView(R.id.layout_progress)         View   progressLayout;
+    @BindView(R.id.container)               View   layout;
 
     private GoogleMap          mGoogleMap;
     private GoogleApiClient    mGoogleApiClient;
@@ -71,7 +72,6 @@ public class MyLocationActivity extends BaseActivity implements OnMapReadyCallba
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_location);
         ButterKnife.bind(this);
-        setBottomIconDefaultColor();
         mImageLocation.setColorFilter(ContextCompat.getColor(this, R.color.colorPrimary));
         setToolbarWithBackArrow();
     }
@@ -94,7 +94,6 @@ public class MyLocationActivity extends BaseActivity implements OnMapReadyCallba
 
         mapFrag = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFrag.getMapAsync(this);
-
     }
 
 
@@ -103,45 +102,6 @@ public class MyLocationActivity extends BaseActivity implements OnMapReadyCallba
         mGoogleMap = googleMap;
         if (mGoogleMap == null) Log.e("", "");
         mGoogleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-        if (mGoogleMap != null) {
-            mGoogleMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
-                @Override
-                public View getInfoWindow(Marker marker) {
-                    View v = getLayoutInflater().inflate(R.layout.info_window, null);
-                    TextView lat = (TextView) v.findViewById(R.id.text_lat);
-                    TextView lng = (TextView) v.findViewById(R.id.text_lng);
-                    TextView address = (TextView) v.findViewById(R.id.text_address);
-                    TextView locality = (TextView) v.findViewById(R.id.text_locality);
-                    TextView country = (TextView) v.findViewById(R.id.text_country);
-
-                    LatLng latLng = marker.getPosition();
-                    String latStr = "Latitude: " + latLng.latitude;
-                    lat.setText(latStr);
-                    String lngStr = "Longitude: " + latLng.longitude;
-                    lng.setText(lngStr);
-                    Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
-                    try {
-                        List<Address> addresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1);
-                        if (addresses != null && addresses.size() > 0) {
-                            Address obj = addresses.get(0);
-                            address.setText(obj.getAddressLine(0));
-                            locality.setText(obj.getLocality());
-                            country.setText(obj.getCountryName());
-                        }
-
-
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    return v;
-                }
-
-                @Override
-                public View getInfoContents(Marker marker) {
-                    return null;
-                }
-            });
-        }
 
         //Initialize Google Play Services
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

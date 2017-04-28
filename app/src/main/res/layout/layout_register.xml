@@ -1,117 +1,161 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:focusableInTouchMode="true"
-    android:orientation="vertical"
-    android:padding="32dp">
+    android:orientation="vertical">
 
-    <TextView
-        style="@style/Label"
+    <LinearLayout
+        android:id="@+id/layout_progress"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/label_full_name"/>
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:visibility="gone">
 
-    <EditText
-        android:id="@+id/input_full_name"
-        style="@style/InputField"
+        <ProgressBar
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminateDrawable="@drawable/progress_circular"/>
+
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inputType="text"/>
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="32dp">
 
-    <TextView
-        style="@style/Label"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="@string/label_username"/>
-
-    <EditText
-        android:id="@+id/input_username"
-        style="@style/InputField"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inputType="text"/>
-
-
-    <TextView
-        style="@style/Label"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="@string/label_email"/>
-
-    <EditText
-        android:id="@+id/input_email"
-        style="@style/InputField"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inputType="textEmailAddress"/>
-
-    <TextView
-        style="@style/Label"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="@string/label_password"/>
-
-    <EditText
-        android:id="@+id/input_password"
-        style="@style/InputField"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inputType="textPassword"/>
-
-    <TextView
-        style="@style/Label"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="@string/label_confirm_password"/>
-
-    <EditText
-        android:id="@+id/input_confirm_password"
-        style="@style/InputField"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inputType="textPassword"/>
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="4dp"
-        android:layout_marginTop="16dp"
-        android:background="@drawable/edittext_grey_border">
-
-        <Spinner
-            android:id="@+id/spinner"
-            style="@style/MySpinnerItemStyle"
+        <TextView
+            style="@style/Label"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:text="@string/label_full_name"/>
 
-    </RelativeLayout>
+        <EditText
+            android:id="@+id/input_full_name"
+            style="@style/InputField"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            tools:ignore="LabelFor"/>
+
+        <TextView
+            android:id="@+id/error_full_name"
+            style="@style/ErrorLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/error_label_empty_field"
+            android:visibility="gone"
+            tools:visibility="visible"/>
+
+        <TextView
+            style="@style/Label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/label_username"/>
+
+        <EditText
+            android:id="@+id/input_username"
+            style="@style/InputField"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            tools:ignore="LabelFor"/>
+
+        <TextView
+            android:id="@+id/error_username"
+            style="@style/ErrorLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/error_label_username_exists"
+            android:visibility="gone"
+            tools:visibility="visible"/>
 
 
-    <TextView
-        style="@style/Label"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="@string/label_security_ques_ans"/>
+        <TextView
+            style="@style/Label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/label_email"/>
 
-    <EditText
-        android:id="@+id/input_ans"
-        style="@style/InputField"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inputType="text"/>
+        <EditText
+            android:id="@+id/input_email"
+            style="@style/InputField"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textEmailAddress"
+            tools:ignore="LabelFor"/>
 
-    <Button
-        android:id="@+id/button_reg"
-        style="@style/ButtonStyle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="@string/button_register"/>
+        <TextView
+            android:id="@+id/error_email"
+            style="@style/ErrorLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/error_label_invalid_email"
+            android:visibility="gone"
+            tools:visibility="visible"/>
+
+        <TextView
+            style="@style/Label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/label_password"/>
+
+        <EditText
+            android:id="@+id/input_password"
+            style="@style/InputField"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword"
+            tools:ignore="LabelFor"/>
+
+        <TextView
+            android:id="@+id/error_password"
+            style="@style/ErrorLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/error_password"
+            android:visibility="gone"
+            tools:visibility="visible"/>
+
+        <TextView
+            style="@style/Label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/label_confirm_password"/>
+
+        <EditText
+            android:id="@+id/input_confirm_password"
+            style="@style/InputField"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword"
+            tools:ignore="LabelFor"/>
+
+        <TextView
+            android:id="@+id/error_password_mismatch"
+            style="@style/ErrorLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/error_password_mismatch"
+            android:visibility="gone"
+            tools:visibility="visible"/>
+
+        <Button
+            android:id="@+id/button_reg"
+            style="@style/ButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/button_register"/>
+    </LinearLayout>
+
+
 </LinearLayout>

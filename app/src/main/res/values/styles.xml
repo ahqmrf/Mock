@@ -38,6 +38,13 @@
         <item name="android:paddingBottom">8dp</item>
     </style>
 
+    <style name="ErrorLabel">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/red</item>
+        <item name="android:paddingTop">4dp</item>
+        <item name="android:paddingBottom">4dp</item>
+    </style>
+
     <style name="SingleLineLabel" parent="Label">
         <item name="android:ellipsize">end</item>
         <item name="android:maxLines">1</item>

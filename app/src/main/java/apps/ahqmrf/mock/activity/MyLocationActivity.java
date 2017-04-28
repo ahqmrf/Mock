@@ -42,6 +42,7 @@ import java.util.Locale;
 import apps.ahqmrf.mock.BaseActivity;
 import apps.ahqmrf.mock.R;
 import apps.ahqmrf.mock.util.Const;
+import apps.ahqmrf.mock.util.Utility;
 import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -60,18 +61,26 @@ public class MyLocationActivity extends BaseActivity implements OnMapReadyCallba
     private Location           mLastLocation;
     private Marker             mCurrLocationMarker;
     private LocationManager    locationManager;
-    private FirebaseDatabase  database         = FirebaseDatabase.getInstance();
-    private boolean           shouldRefreshMap = true;
-    private DatabaseReference location         = database.getReference("location").child("ahqmrf");
-    private DatabaseReference refLat           = location.child("latitude");
-    private DatabaseReference refLng           = location.child("longitude");
-    private DatabaseReference refState         = location.child("state");
+    private FirebaseDatabase database         = FirebaseDatabase.getInstance();
+    private boolean          shouldRefreshMap = true;
+    private String            thisUserName;
+    private String            thisUserFullName;
+    private DatabaseReference location;
+    private DatabaseReference refLat;
+    private DatabaseReference refLng;
+    private DatabaseReference refState;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_location);
         ButterKnife.bind(this);
+        thisUserName = Utility.getString(this, Const.Keys.USERNAME);
+        thisUserFullName = Utility.getString(this, Const.Keys.NAME);
+        location = database.getReference(Const.Route.LOCATION_REF).child(thisUserName);
+        refLat = location.child(Const.Keys.LATITUDE);
+        refLng = location.child(Const.Keys.LONGITUDE);
+        refState = location.child(Const.Keys.STATE);
         mImageLocation.setColorFilter(ContextCompat.getColor(this, R.color.colorPrimary));
         setToolbarWithBackArrow();
     }
@@ -185,7 +194,7 @@ public class MyLocationActivity extends BaseActivity implements OnMapReadyCallba
 
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(latLng);
-        markerOptions.title("Me"); // will be changed to location name
+        markerOptions.title(thisUserFullName);
         markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
         mCurrLocationMarker = mGoogleMap.addMarker(markerOptions);
 

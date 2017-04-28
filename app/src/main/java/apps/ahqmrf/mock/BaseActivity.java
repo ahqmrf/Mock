@@ -15,6 +15,9 @@ import android.widget.ImageView;
 
 import apps.ahqmrf.mock.activity.FriendsListActivity;
 import apps.ahqmrf.mock.activity.MyLocationActivity;
+import apps.ahqmrf.mock.activity.SignInActivity;
+import apps.ahqmrf.mock.util.Const;
+import apps.ahqmrf.mock.util.Utility;
 import butterknife.BindView;
 import butterknife.OnClick;
 
@@ -97,6 +100,10 @@ public abstract class BaseActivity extends AppCompatActivity {
         int itemId = item.getItemId();
         if (itemId == android.R.id.home) {
             onBackPressed();
+        }
+        if (itemId == R.id.menu_item_logout) {
+            Utility.putBoolean(this, Const.Keys.LOGGED_IN, false);
+            trigger(SignInActivity.class);
         }
         return super.onOptionsItemSelected(item);
     }

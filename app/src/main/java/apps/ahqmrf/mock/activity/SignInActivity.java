@@ -2,39 +2,63 @@ package apps.ahqmrf.mock.activity;
 
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import apps.ahqmrf.mock.R;
+import apps.ahqmrf.mock.User;
+import apps.ahqmrf.mock.util.Const;
+import apps.ahqmrf.mock.util.Utility;
 import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import butterknife.OnTouch;
 
 public class SignInActivity extends AppCompatActivity {
 
     @Nullable
-    @BindView(R.id.app_toolbar)    Toolbar  toolbar;
-    @BindView(R.id.input_email)    EditText mInputEmail;
-    @BindView(R.id.input_password) EditText mInputPassword;
-    @BindView(R.id.checkbox)       CheckBox mCheckBox;
-    @BindView(R.id.text_register)  TextView mRegister;
+    @BindView(R.id.app_toolbar)     Toolbar  toolbar;
+    @BindView(R.id.input_email)     EditText mInputEmail;
+    @BindView(R.id.input_password)  EditText mInputPassword;
+    @BindView(R.id.text_register)   TextView mRegister;
+    @BindView(R.id.layout_progress) View     progressLayout;
+    @BindView(R.id.error_email)     TextView emailError;
+    @BindView(R.id.error_password)  TextView passwordError;
 
     @BindString(R.string.title_sign_in) String title;
+    @BindString(R.string.error_signin)  String errorSigningIn;
+    private String email;
+    private String password;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_in);
+
+        if (Utility.getBoolean(this, Const.Keys.LOGGED_IN)) {
+            Intent intent = new Intent(getApplicationContext(), MyLocationActivity.class);
+            startActivity(intent);
+            finish();
+        }
         ButterKnife.bind(this);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
@@ -72,11 +96,87 @@ public class SignInActivity extends AppCompatActivity {
     }
 
     @OnClick(R.id.button_sign_in)
+    public void onSignInClick() {
+        progressLayout.setVisibility(View.VISIBLE);
+        validateForm();
+    }
+
+    private void validateForm() {
+        boolean allValid = true;
+        clearErrors();
+        email = mInputEmail.getText().toString();
+        password = mInputPassword.getText().toString();
+
+        if (TextUtils.isEmpty(email)) {
+            emailError.setText(R.string.error_label_empty_field);
+            emailError.setVisibility(View.VISIBLE);
+            allValid = false;
+        }
+
+        if (!TextUtils.isEmpty(email) && !Utility.isValidEmail(email)) {
+            emailError.setText(R.string.error_label_invalid_email);
+            emailError.setVisibility(View.VISIBLE);
+            allValid = false;
+        }
+
+        if (TextUtils.isEmpty(password)) {
+            passwordError.setText(R.string.error_label_empty_field);
+            passwordError.setVisibility(View.VISIBLE);
+            allValid = false;
+        }
+
+        if(allValid) signIn();
+        else progressLayout.setVisibility(View.GONE);
+    }
+
+
+    private void clearErrors() {
+        emailError.setVisibility(View.GONE);
+        passwordError.setVisibility(View.GONE);
+    }
+
     public void signIn() {
-        Intent intent = new Intent(this, MyLocationActivity.class);
-        startActivity(intent);
-        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-        finish();
+        FirebaseAuth.getInstance().
+                signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        progressLayout.setVisibility(View.GONE);
+                        if (task.isSuccessful()) {
+                            findUser();
+                            Intent intent = new Intent(getApplicationContext(), MyLocationActivity.class);
+                            startActivity(intent);
+                            overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+                            finish();
+                        } else {
+                            Toast.makeText(getApplicationContext(), errorSigningIn, Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+    }
+
+    private void findUser() {
+        FirebaseDatabase.getInstance().getReference(Const.Route.USER_REF).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot data : dataSnapshot.getChildren()) {
+                    User user = data.getValue(User.class);
+                    markAsLoggedIn(user);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                System.out.println("The read failed: " + databaseError.getCode());
+            }
+        });
+    }
+
+    private void markAsLoggedIn(User user) {
+        Utility.putString(this, Const.Keys.NAME, user.getFullName());
+        Utility.putString(this, Const.Keys.USERNAME, user.getUsername());
+        Utility.putString(this, Const.Keys.EMAIL, user.getEmail());
+        Utility.putBoolean(this, Const.Keys.LOGGED_IN, true);
     }
 
     @OnClick(R.id.text_register)

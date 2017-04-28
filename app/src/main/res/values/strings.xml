@@ -13,12 +13,16 @@
     <string name="label_email">Email</string>
     <string name="label_password">Password</string>
     <string name="button_sign_in">Sign in</string>
-    <string name="label_remember_me">Remember me</string>
-    <string name="link_forgot_password">Forgot your password?</string>
     <string name="button_register">Register</string>
     <string name="label_full_name">Full name</string>
     <string name="label_username">Username</string>
     <string name="label_confirm_password">Confirm password</string>
-    <string name="label_prompt_security_ques">Choose a security question</string>
-    <string name="label_security_ques_ans">Answer for the chosen question:</string>
+    <string name="error_label_empty_field">This field is required</string>
+    <string name="error_label_username_exists">Username already exists</string>
+    <string name="error_label_invalid_email">Invalid email address</string>
+    <string name="error_password">Password should be at least 6 characters</string>
+    <string name="error_password_mismatch">Passwords do not match</string>
+    <string name="error_signin">Invalid email or password!</string>
+    <string name="error_reg">Failed to register user! Please try again!</string>
+    <string name="msg_reg_success">Registered successfully!</string>
 </resources>

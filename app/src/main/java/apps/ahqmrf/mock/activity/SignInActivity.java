@@ -24,6 +24,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.Map;
+
 import apps.ahqmrf.mock.R;
 import apps.ahqmrf.mock.User;
 import apps.ahqmrf.mock.util.Const;
@@ -40,7 +42,7 @@ public class SignInActivity extends AppCompatActivity {
     @BindView(R.id.input_email)     EditText mInputEmail;
     @BindView(R.id.input_password)  EditText mInputPassword;
     @BindView(R.id.text_register)   TextView mRegister;
-    @BindView(R.id.layout_progress) View     progressLayout;
+    @BindView(R.id.progressBar) View     progressLayout;
     @BindView(R.id.error_email)     TextView emailError;
     @BindView(R.id.error_password)  TextView passwordError;
 
@@ -141,14 +143,10 @@ public class SignInActivity extends AppCompatActivity {
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        progressLayout.setVisibility(View.GONE);
                         if (task.isSuccessful()) {
                             findUser();
-                            Intent intent = new Intent(getApplicationContext(), MyLocationActivity.class);
-                            startActivity(intent);
-                            overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-                            finish();
                         } else {
+                            progressLayout.setVisibility(View.GONE);
                             Toast.makeText(getApplicationContext(), errorSigningIn, Toast.LENGTH_SHORT).show();
                         }
                     }
@@ -159,10 +157,7 @@ public class SignInActivity extends AppCompatActivity {
         FirebaseDatabase.getInstance().getReference(Const.Route.USER_REF).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot data : dataSnapshot.getChildren()) {
-                    User user = data.getValue(User.class);
-                    markAsLoggedIn(user);
-                }
+                findUser((Map<String,Object>) dataSnapshot.getValue());
             }
 
             @Override
@@ -172,11 +167,28 @@ public class SignInActivity extends AppCompatActivity {
         });
     }
 
-    private void markAsLoggedIn(User user) {
-        Utility.putString(this, Const.Keys.NAME, user.getFullName());
-        Utility.putString(this, Const.Keys.USERNAME, user.getUsername());
-        Utility.putString(this, Const.Keys.EMAIL, user.getEmail());
+    private void findUser(Map<String, Object> value) {
+        for (Map.Entry<String, Object> entry : value.entrySet()){
+
+            //Get user map
+            Map singleUser = (Map) entry.getValue();
+            if(singleUser.get(Const.Keys.EMAIL).equals(email)) {
+                markAsLoggedIn(singleUser);
+            }
+        }
+
+    }
+
+    private void markAsLoggedIn(Map user) {
+        Utility.putString(this, Const.Keys.NAME, (String) user.get(Const.Keys.NAME));
+        Utility.putString(this, Const.Keys.USERNAME, (String) user.get(Const.Keys.USERNAME));
+        Utility.putString(this, Const.Keys.EMAIL, (String) user.get(Const.Keys.EMAIL));
         Utility.putBoolean(this, Const.Keys.LOGGED_IN, true);
+        progressLayout.setVisibility(View.GONE);
+        Intent intent = new Intent(getApplicationContext(), MyLocationActivity.class);
+        startActivity(intent);
+        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+        finish();
     }
 
     @OnClick(R.id.text_register)

@@ -103,6 +103,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
         if (itemId == R.id.menu_item_logout) {
             Utility.putBoolean(this, Const.Keys.LOGGED_IN, false);
+            finishAffinity();
             trigger(SignInActivity.class);
         }
         return super.onOptionsItemSelected(item);

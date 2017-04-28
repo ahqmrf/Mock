@@ -1,95 +1,95 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:focusableInTouchMode="true"
-              android:orientation="vertical">
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:focusableInTouchMode="true"
+    android:orientation="vertical"
+    android:padding="32dp">
 
-    <LinearLayout
-        android:id="@+id/layout_progress"
+    <TextView
+        style="@style/Label"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:visibility="gone">
+        android:layout_height="wrap_content"
+        android:text="@string/label_email"/>
 
-        <ProgressBar
-            style="?android:attr/progressBarStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:indeterminateDrawable="@drawable/progress_circular"/>
-
-    </LinearLayout>
-
-    <LinearLayout
+    <EditText
+        android:id="@+id/input_email"
+        style="@style/InputField"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="32dp"
-        android:orientation="vertical">
+        android:layout_height="wrap_content"
+        android:inputType="textEmailAddress"/>
 
-        <TextView
-            style="@style/Label"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/label_email" />
+    <TextView
+        android:id="@+id/error_email"
+        style="@style/ErrorLabel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/error_label_invalid_email"
+        android:visibility="gone"
+        tools:visibility="visible"/>
 
-        <EditText
-            android:id="@+id/input_email"
-            style="@style/InputField"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="textEmailAddress" />
+    <TextView
+        style="@style/Label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/label_password"/>
 
-        <TextView
-            android:id="@+id/error_email"
-            style="@style/ErrorLabel"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/error_label_invalid_email"
-            android:visibility="gone"
-            tools:visibility="visible"/>
+    <EditText
+        android:id="@+id/input_password"
+        style="@style/InputField"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textPassword"/>
 
-        <TextView
-            style="@style/Label"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="@string/label_password" />
+    <TextView
+        android:id="@+id/error_password"
+        style="@style/ErrorLabel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/error_label_empty_field"
+        android:visibility="gone"
+        tools:visibility="visible"/>
 
-        <EditText
-            android:id="@+id/input_password"
-            style="@style/InputField"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="textPassword" />
 
-        <TextView
-            android:id="@+id/error_password"
-            style="@style/ErrorLabel"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/error_label_empty_field"
-            android:visibility="gone"
-            tools:visibility="visible"/>
-
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp">
 
         <Button
             android:id="@+id/button_sign_in"
             style="@style/ButtonStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="@string/button_sign_in" />
+            android:text="@string/button_sign_in"/>
 
-        <TextView
-            android:id="@+id/text_register"
-            android:layout_marginTop="16dp"
-            style="@style/Label"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:minHeight="40dp"
-            android:gravity="center" />
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="8dp"
+            android:elevation="2dp"
+            android:indeterminateDrawable="@drawable/progress_circular"
+            android:translationZ="2dp"
+            android:visibility="gone"
+            tools:visibility="visible"/>
 
-    </LinearLayout>
+    </RelativeLayout>
+
+
+    <TextView
+        android:id="@+id/text_register"
+        style="@style/Label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:gravity="center"
+        android:minHeight="40dp"/>
 
 </LinearLayout>

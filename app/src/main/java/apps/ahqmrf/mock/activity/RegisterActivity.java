@@ -43,7 +43,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnFocusC
 
     @BindView(R.id.app_toolbar) Toolbar toolbar;
 
-    @BindView(R.id.layout_progress)        View     progressLayout;
+    @BindView(R.id.progressBar)        View     progressLayout;
     @BindView(R.id.input_full_name)        EditText fullNameInput;
     @BindView(R.id.input_username)         EditText usernameInput;
     @BindView(R.id.input_email)            EditText emailInput;
@@ -235,15 +235,14 @@ public class RegisterActivity extends AppCompatActivity implements View.OnFocusC
     }
 
     private void createUser() {
-        DatabaseReference database = FirebaseDatabase.getInstance().getReference(Const.Route.USER_REF);
-        Map<String, User> users = new HashMap<>();
-        User user = new User(email, username, fullName);
-        users.put(username, user);
-        database.setValue(users);
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference(Const.Route.USER_REF).child(username);
+        database.child(Const.Keys.NAME).setValue(fullName);
+        database.child(Const.Keys.USERNAME).setValue(username);
+        database.child(Const.Keys.EMAIL).setValue(email);
         Utility.showToast(this, successRegister);
-        Utility.putString(this, Const.Keys.NAME, user.getFullName());
-        Utility.putString(this, Const.Keys.USERNAME, user.getUsername());
-        Utility.putString(this, Const.Keys.EMAIL, user.getEmail());
+        Utility.putString(this, Const.Keys.NAME, fullName);
+        Utility.putString(this, Const.Keys.USERNAME, username);
+        Utility.putString(this, Const.Keys.EMAIL, email);
         Utility.putBoolean(this, Const.Keys.LOGGED_IN, true);
         Intent intent = new Intent(getApplicationContext(), MyLocationActivity.class);
         startActivity(intent);

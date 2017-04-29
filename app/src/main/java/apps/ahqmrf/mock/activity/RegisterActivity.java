@@ -149,7 +149,13 @@ public class RegisterActivity extends AppCompatActivity implements View.OnFocusC
             allValid = false;
         }
 
-        if (!TextUtils.isEmpty(username)) {
+        if(!Utility.isValidUsername(username)) {
+            usernameError.setText(R.string.error_invalid_username);
+            usernameError.setVisibility(View.VISIBLE);
+            allValid = false;
+        }
+
+        if (!TextUtils.isEmpty(username) && Utility.isValidUsername(username)) {
             refUser.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {

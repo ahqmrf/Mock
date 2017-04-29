@@ -25,4 +25,6 @@
     <string name="error_signin">Invalid email or password!</string>
     <string name="error_reg">Failed to register user! Please try again!</string>
     <string name="msg_reg_success">Registered successfully!</string>
+    <string name="title_search">Search user</string>
+    <string name="error_invalid_username">Username must be alphabetic</string>
 </resources>

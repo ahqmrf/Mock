@@ -54,4 +54,11 @@ public class Utility {
     public static void showToast(Context context, String msg) {
         Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
     }
+
+    public static boolean isValidUsername(String username) {
+        for(int i = 0; i < username.length(); i++) {
+            if(!Character.isLetter(username.charAt(i))) return false;
+        }
+        return true;
+    }
 }

@@ -4,18 +4,31 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+import java.util.Map;
+
 import apps.ahqmrf.mock.activity.FriendsListActivity;
 import apps.ahqmrf.mock.activity.MyLocationActivity;
 import apps.ahqmrf.mock.activity.SignInActivity;
+import apps.ahqmrf.mock.adapter.UserListAdapter;
 import apps.ahqmrf.mock.util.Const;
 import apps.ahqmrf.mock.util.Utility;
 import butterknife.BindView;
@@ -25,11 +38,15 @@ import butterknife.OnClick;
  * Created by bsse0 on 4/22/2017.
  */
 
-public abstract class BaseActivity extends AppCompatActivity {
+public abstract class BaseActivity extends AppCompatActivity implements SearchView.OnQueryTextListener, UserListAdapter.UserClickCallback {
 
     @Nullable
     @BindView(R.id.app_toolbar)
     protected Toolbar toolbar;
+
+    @Nullable
+    @BindView(R.id.userList)
+    protected RecyclerView recyclerView;
 
     @BindView(R.id.image_my_location)
     protected ImageView mImageLocation;
@@ -64,11 +81,46 @@ public abstract class BaseActivity extends AppCompatActivity {
     public void showNotification() {
     }
 
+    protected ArrayList<User> userList;
+    protected UserListAdapter mAdapter;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+    }
+
+    protected void getAllUsers() {
+        FirebaseDatabase.getInstance().getReference(Const.Route.USER_REF).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                prepareUserList((Map<String, Object>) dataSnapshot.getValue());
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                System.out.println("The read failed: " + databaseError.getCode());
+            }
+        });
+    }
+
+    protected void prepareUserList(Map<String, Object> value) {
+        for (Map.Entry<String, Object> entry : value.entrySet()) {
+
+            //Get user map
+            Map singleUser = (Map) entry.getValue();
+            String email = (String) singleUser.get(Const.Keys.EMAIL);
+            String username = (String) singleUser.get(Const.Keys.USERNAME);
+            String fullName = (String) singleUser.get(Const.Keys.NAME);
+
+            userList.add(new User(email, username, fullName));
+        }
+
+        LinearLayoutManager manager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        recyclerView.setLayoutManager(manager);
+        mAdapter = new UserListAdapter(this, this, userList);
+        recyclerView.setAdapter(mAdapter);
     }
 
     protected void setToolbarWithBackArrow() {
@@ -85,6 +137,23 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.overflow, menu);
+        MenuItem item = menu.findItem(R.id.menu_item_search);
+        MenuItemCompat.setOnActionExpandListener(item, new MenuItemCompat.OnActionExpandListener() {
+
+            @Override
+            public boolean onMenuItemActionExpand(MenuItem item) {
+                recyclerView.setVisibility(View.VISIBLE);
+                return true; // KEEP IT TO TRUE OR IT DOESN'T OPEN !!
+            }
+
+            @Override
+            public boolean onMenuItemActionCollapse(MenuItem item) {
+                recyclerView.setVisibility(View.GONE);
+                return true; // OR FALSE IF YOU DIDN'T WANT IT TO CLOSE!
+            }
+        });
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(item);
+        searchView.setOnQueryTextListener(this);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -92,6 +161,8 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         setToolbarTitle();
+        userList = new ArrayList<>();
+        getAllUsers();
         onViewCreated();
     }
 
@@ -117,8 +188,41 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        query = query.toLowerCase();
+        ArrayList<User> newList = new ArrayList<>();
+        for (User user : userList) {
+            if (user.getFullName().toLowerCase().contains(query)
+                    || user.getUsername().toLowerCase().contains(query)) {
+                newList.add(user);
+            }
+        }
+        if(newList.isEmpty()) Utility.showToast(this, "No search result found for " + query);
+        if (mAdapter != null) mAdapter.setFilter(newList);
+        return true;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        newText = newText.toLowerCase();
+        ArrayList<User> newList = new ArrayList<>();
+        for (User user : userList) {
+            if (user.getFullName().toLowerCase().contains(newText)
+                    || user.getUsername().toLowerCase().contains(newText)) {
+                newList.add(user);
+            }
+        };
+        if (mAdapter != null) mAdapter.setFilter(newList);
+        return true;
+    }
+
     protected abstract void setToolbarTitle();
 
     protected abstract void onViewCreated();
 
+    @Override
+    public void onUserClick(User user) {
+
+    }
 }

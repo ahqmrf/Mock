@@ -49,26 +49,19 @@ public class TrackerActivity extends BaseActivity implements OnMapReadyCallback,
     @BindView(R.id.layout_progress) View progressLayout;
     @BindView(R.id.container)       View layout;
 
-    private GoogleMap          mGoogleMap;
-    private GoogleApiClient    mGoogleApiClient;
-    private SupportMapFragment mapFrag;
-    private LocationRequest    mLocationRequest;
-    private Location           mLastLocation;
-    private Marker             mCurrLocationMarker;
-    private LocationManager    locationManager;
-    private FirebaseDatabase database         = FirebaseDatabase.getInstance();
-    private boolean          shouldRefreshMap = true;
-    private String            thisUserName;
-    private String            thisUserFullName;
-    private User              user;
-    private DatabaseReference location;
+    private GoogleMap       mGoogleMap;
+    private GoogleApiClient mGoogleApiClient;
+    private Marker          mCurrLocationMarker;
+    private FirebaseDatabase database = FirebaseDatabase.getInstance();
+    private String thisUserName;
+    private String thisUserFullName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tracker);
         ButterKnife.bind(this);
-        user = getIntent().getParcelableExtra(Const.Keys.USER);
+        User user = getIntent().getParcelableExtra(Const.Keys.USER);
         thisUserName = user.getUsername();
         thisUserFullName = user.getFullName();
         setToolbarWithBackArrow();
@@ -81,19 +74,19 @@ public class TrackerActivity extends BaseActivity implements OnMapReadyCallback,
 
     @Override
     protected void onViewCreated() {
-        mapFrag = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        SupportMapFragment mapFrag = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFrag.getMapAsync(this);
-        location = database.getReference(Const.Route.LOCATION_REF);
+        DatabaseReference location = database.getReference(Const.Route.LOCATION_REF);
         location.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                Map<String,Object> value = (Map<String,Object>) dataSnapshot.getValue();
-                for (Map.Entry<String, Object> entry : value.entrySet()){
+                Map<String, Object> value = (Map<String, Object>) dataSnapshot.getValue();
+                for (Map.Entry<String, Object> entry : value.entrySet()) {
 
                     //Get user map
                     Map singleUser = (Map) entry.getValue();
-                    if(singleUser.get(Const.Keys.USERNAME).equals(thisUserName)) {
-                        LatLng latLng = new LatLng((double)singleUser.get(Const.Keys.LATITUDE), (double)singleUser.get(Const.Keys.LONGITUDE));
+                    if (singleUser.get(Const.Keys.USERNAME).equals(thisUserName)) {
+                        LatLng latLng = new LatLng((double) singleUser.get(Const.Keys.LATITUDE), (double) singleUser.get(Const.Keys.LONGITUDE));
                         updateMarker(latLng);
                         break;
                     }
@@ -130,7 +123,7 @@ public class TrackerActivity extends BaseActivity implements OnMapReadyCallback,
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        mLocationRequest = new LocationRequest();
+        LocationRequest mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(1000);
         mLocationRequest.setFastestInterval(1000);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
@@ -191,11 +184,5 @@ public class TrackerActivity extends BaseActivity implements OnMapReadyCallback,
                 .build();
         mGoogleApiClient.connect();
         progressLayout.setVisibility(View.GONE);
-    }
-
-    @Override
-    protected void onStop() {
-        shouldRefreshMap = false;
-        super.onStop();
     }
 }

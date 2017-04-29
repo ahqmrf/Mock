@@ -55,7 +55,8 @@
         android:layout_above="@+id/bottom_layout"
         android:layout_below="@id/app_toolbar"
         android:background="@color/white"
-        android:visibility="gone"/>
+        android:visibility="gone"
+        tools:visibility="visible"/>
 
     <include
         android:id="@+id/bottom_layout"

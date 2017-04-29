@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -45,6 +46,9 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
     protected Toolbar toolbar;
 
     @Nullable
+    @BindView(R.id.fab_check_in)
+    protected FloatingActionButton fab;
+
     @BindView(R.id.userList)
     protected RecyclerView recyclerView;
 
@@ -83,6 +87,7 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
 
     protected ArrayList<User> userList;
     protected UserListAdapter mAdapter;
+    protected MenuItem item;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -137,19 +142,22 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.overflow, menu);
-        MenuItem item = menu.findItem(R.id.menu_item_search);
+        item = menu.findItem(R.id.menu_item_search);
+
         MenuItemCompat.setOnActionExpandListener(item, new MenuItemCompat.OnActionExpandListener() {
 
             @Override
             public boolean onMenuItemActionExpand(MenuItem item) {
                 recyclerView.setVisibility(View.VISIBLE);
-                return true; // KEEP IT TO TRUE OR IT DOESN'T OPEN !!
+                if(fab != null) fab.setVisibility(View.INVISIBLE);
+                return true;
             }
 
             @Override
             public boolean onMenuItemActionCollapse(MenuItem item) {
                 recyclerView.setVisibility(View.GONE);
-                return true; // OR FALSE IF YOU DIDN'T WANT IT TO CLOSE!
+                if(fab != null) fab.setVisibility(View.VISIBLE);
+                return true;
             }
         });
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(item);
@@ -198,7 +206,7 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
                 newList.add(user);
             }
         }
-        if(newList.isEmpty()) Utility.showToast(this, "No search result found for " + query);
+        if (newList.isEmpty()) Utility.showToast(this, "No search result found for " + query);
         if (mAdapter != null) mAdapter.setFilter(newList);
         return true;
     }
@@ -212,7 +220,8 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
                     || user.getUsername().toLowerCase().contains(newText)) {
                 newList.add(user);
             }
-        };
+        }
+        ;
         if (mAdapter != null) mAdapter.setFilter(newList);
         return true;
     }
@@ -226,5 +235,6 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
         Intent intent = new Intent(this, TrackerActivity.class);
         intent.putExtra(Const.Keys.USER, user);
         startActivity(intent);
+        item.collapseActionView();
     }
 }

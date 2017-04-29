@@ -57,11 +57,21 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.UserVi
 
     class UserViewHolder extends RecyclerView.ViewHolder {
         TextView fullName, username;
+        View layout;
 
         public UserViewHolder(View itemView) {
             super(itemView);
             fullName = (TextView) itemView.findViewById(R.id.text_full_name);
             username = (TextView) itemView.findViewById(R.id.text_username);
+            layout = itemView.findViewById(R.id.item_list_user);
+            layout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(mCallback != null) {
+                        mCallback.onUserClick(mItems.get(getAdapterPosition()));
+                    }
+                }
+            });
         }
     }
 }

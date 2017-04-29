@@ -27,7 +27,6 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.Map;
 
 import apps.ahqmrf.mock.R;
-import apps.ahqmrf.mock.User;
 import apps.ahqmrf.mock.util.Const;
 import apps.ahqmrf.mock.util.Utility;
 import butterknife.BindString;
@@ -180,10 +179,10 @@ public class SignInActivity extends AppCompatActivity {
     }
 
     private void markAsLoggedIn(Map user) {
-        Utility.putString(this, Const.Keys.NAME, (String) user.get(Const.Keys.NAME));
-        Utility.putString(this, Const.Keys.USERNAME, (String) user.get(Const.Keys.USERNAME));
-        Utility.putString(this, Const.Keys.EMAIL, (String) user.get(Const.Keys.EMAIL));
-        Utility.putBoolean(this, Const.Keys.LOGGED_IN, true);
+        Utility.put(this, Const.Keys.NAME, (String) user.get(Const.Keys.NAME));
+        Utility.put(this, Const.Keys.USERNAME, (String) user.get(Const.Keys.USERNAME));
+        Utility.put(this, Const.Keys.EMAIL, (String) user.get(Const.Keys.EMAIL));
+        Utility.put(this, Const.Keys.LOGGED_IN, true);
         progressLayout.setVisibility(View.GONE);
         Intent intent = new Intent(getApplicationContext(), MyLocationActivity.class);
         startActivity(intent);

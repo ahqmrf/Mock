@@ -20,14 +20,14 @@ public class Utility {
         return matcher.find();
     }
 
-    public static void putString(Context context, String key, String valueStr) {
+    public static void put(Context context, String key, String valueStr) {
         SharedPreferences pref = context.getSharedPreferences(Const.PREF_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = pref.edit();
         editor.putString(key, valueStr);
         editor.apply();
     }
 
-    public static void putBoolean(Context context, String key, boolean value) {
+    public static void put(Context context, String key, boolean value) {
         SharedPreferences pref = context.getSharedPreferences(Const.PREF_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = pref.edit();
         editor.putBoolean(key, value);

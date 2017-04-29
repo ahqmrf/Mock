@@ -35,6 +35,8 @@
         </activity>
         <activity android:name=".activity.RegisterActivity">
         </activity>
+        <activity android:name=".activity.TrackerActivity">
+        </activity>
     </application>
 
 </manifest>

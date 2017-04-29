@@ -69,6 +69,7 @@ public class MyLocationActivity extends BaseActivity implements OnMapReadyCallba
     private DatabaseReference refLat;
     private DatabaseReference refLng;
     private DatabaseReference refState;
+    private DatabaseReference refUsername;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,6 +82,8 @@ public class MyLocationActivity extends BaseActivity implements OnMapReadyCallba
         refLat = location.child(Const.Keys.LATITUDE);
         refLng = location.child(Const.Keys.LONGITUDE);
         refState = location.child(Const.Keys.STATE);
+        refUsername = location.child(Const.Keys.USERNAME);
+        refUsername.setValue(thisUserName);
         mImageLocation.setColorFilter(ContextCompat.getColor(this, R.color.colorPrimary));
         setToolbarWithBackArrow();
     }

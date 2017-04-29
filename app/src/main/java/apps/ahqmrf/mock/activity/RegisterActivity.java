@@ -11,9 +11,7 @@ import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,11 +25,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import apps.ahqmrf.mock.R;
-import apps.ahqmrf.mock.User;
 import apps.ahqmrf.mock.util.Const;
 import apps.ahqmrf.mock.util.Utility;
 import butterknife.BindString;
@@ -246,10 +240,10 @@ public class RegisterActivity extends AppCompatActivity implements View.OnFocusC
         database.child(Const.Keys.USERNAME).setValue(username);
         database.child(Const.Keys.EMAIL).setValue(email);
         Utility.showToast(this, successRegister);
-        Utility.putString(this, Const.Keys.NAME, fullName);
-        Utility.putString(this, Const.Keys.USERNAME, username);
-        Utility.putString(this, Const.Keys.EMAIL, email);
-        Utility.putBoolean(this, Const.Keys.LOGGED_IN, true);
+        Utility.put(this, Const.Keys.NAME, fullName);
+        Utility.put(this, Const.Keys.USERNAME, username);
+        Utility.put(this, Const.Keys.EMAIL, email);
+        Utility.put(this, Const.Keys.LOGGED_IN, true);
         Intent intent = new Intent(getApplicationContext(), MyLocationActivity.class);
         startActivity(intent);
         finishAffinity();

@@ -10,7 +10,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,6 +27,7 @@ import java.util.Map;
 import apps.ahqmrf.mock.activity.FriendsListActivity;
 import apps.ahqmrf.mock.activity.MyLocationActivity;
 import apps.ahqmrf.mock.activity.SignInActivity;
+import apps.ahqmrf.mock.activity.TrackerActivity;
 import apps.ahqmrf.mock.adapter.UserListAdapter;
 import apps.ahqmrf.mock.util.Const;
 import apps.ahqmrf.mock.util.Utility;
@@ -173,7 +173,7 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
             onBackPressed();
         }
         if (itemId == R.id.menu_item_logout) {
-            Utility.putBoolean(this, Const.Keys.LOGGED_IN, false);
+            Utility.put(this, Const.Keys.LOGGED_IN, false);
             finishAffinity();
             trigger(SignInActivity.class);
         }
@@ -223,6 +223,8 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
 
     @Override
     public void onUserClick(User user) {
-
+        Intent intent = new Intent(this, TrackerActivity.class);
+        intent.putExtra(Const.Keys.USER, user);
+        startActivity(intent);
     }
 }

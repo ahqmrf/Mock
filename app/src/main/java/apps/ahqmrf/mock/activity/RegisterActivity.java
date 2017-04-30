@@ -130,6 +130,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnFocusC
         emailInput.setBackgroundResource(R.drawable.edittext_grey_border);
         passwordInput.setBackgroundResource(R.drawable.edittext_grey_border);
         confirmPasswordInput.setBackgroundResource(R.drawable.edittext_grey_border);
+        pathInput.setBackgroundResource(R.drawable.edittext_grey_border);
     }
 
     @Override

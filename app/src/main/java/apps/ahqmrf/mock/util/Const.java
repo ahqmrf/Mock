@@ -24,8 +24,6 @@ public final class Const {
         public static final String NAME            = "fullName";
         public static final String USERNAME        = "username";
         public static final String EMAIL           = "email";
-        public static final String SECURITY_QUES   = "securityQuesId";
-        public static final String SECURITY_ANSWER = "securityAnswer";
         public static final String LOGGED_IN       = "isLoggedIn";
         public static final String PROFILE_PIC     = "profilePic";
     }

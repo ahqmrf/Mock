@@ -27,6 +27,7 @@ import java.util.Map;
 
 import apps.ahqmrf.mock.activity.FriendsListActivity;
 import apps.ahqmrf.mock.activity.MyLocationActivity;
+import apps.ahqmrf.mock.activity.SettingsActivity;
 import apps.ahqmrf.mock.activity.SignInActivity;
 import apps.ahqmrf.mock.activity.TrackerActivity;
 import apps.ahqmrf.mock.adapter.UserListAdapter;
@@ -118,8 +119,8 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
             String email = (String) singleUser.get(Const.Keys.EMAIL);
             String username = (String) singleUser.get(Const.Keys.USERNAME);
             String fullName = (String) singleUser.get(Const.Keys.NAME);
-
-            userList.add(new User(email, username, fullName));
+            String imageUrl = (String) singleUser.get(Const.Keys.PROFILE_PIC);
+            userList.add(new User(email, username, fullName, imageUrl));
         }
 
         LinearLayoutManager manager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
@@ -184,6 +185,10 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
             Utility.put(this, Const.Keys.LOGGED_IN, false);
             finishAffinity();
             trigger(SignInActivity.class);
+        }
+
+        if(itemId == R.id.menu_item_settings) {
+            trigger(SettingsActivity.class);
         }
         return super.onOptionsItemSelected(item);
     }

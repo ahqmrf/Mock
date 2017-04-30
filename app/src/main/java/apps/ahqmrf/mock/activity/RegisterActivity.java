@@ -267,10 +267,14 @@ public class RegisterActivity extends AppCompatActivity implements View.OnFocusC
         database.child(Const.Keys.NAME).setValue(fullName);
         database.child(Const.Keys.USERNAME).setValue(username);
         database.child(Const.Keys.EMAIL).setValue(email);
+        String path = "";
+        if(uri != null) path = uri.getLastPathSegment();
+        database.child(Const.Keys.PROFILE_PIC).setValue(path);
         Utility.showToast(this, successRegister);
         Utility.put(this, Const.Keys.NAME, fullName);
         Utility.put(this, Const.Keys.USERNAME, username);
         Utility.put(this, Const.Keys.EMAIL, email);
+        Utility.put(this, Const.Keys.PROFILE_PIC, path);
         Utility.put(this, Const.Keys.LOGGED_IN, true);
         Intent intent = new Intent(getApplicationContext(), MyLocationActivity.class);
         startActivity(intent);

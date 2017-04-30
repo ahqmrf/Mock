@@ -34,8 +34,10 @@
             </intent-filter>
         </activity>
         <activity android:name=".activity.RegisterActivity"/>
+        <activity android:name=".activity.TrackerActivity"/>
         <activity
-            android:name=".activity.TrackerActivity"/>
+            android:name=".activity.SettingsActivity"
+            android:launchMode="singleTask"/>
     </application>
 
 </manifest>

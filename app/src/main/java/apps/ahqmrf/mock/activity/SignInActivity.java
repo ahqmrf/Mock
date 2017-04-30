@@ -182,6 +182,7 @@ public class SignInActivity extends AppCompatActivity {
         Utility.put(this, Const.Keys.NAME, (String) user.get(Const.Keys.NAME));
         Utility.put(this, Const.Keys.USERNAME, (String) user.get(Const.Keys.USERNAME));
         Utility.put(this, Const.Keys.EMAIL, (String) user.get(Const.Keys.EMAIL));
+        Utility.put(this, Const.Keys.PROFILE_PIC, (String) user.get(Const.Keys.PROFILE_PIC));
         Utility.put(this, Const.Keys.LOGGED_IN, true);
         progressLayout.setVisibility(View.GONE);
         Intent intent = new Intent(getApplicationContext(), MyLocationActivity.class);

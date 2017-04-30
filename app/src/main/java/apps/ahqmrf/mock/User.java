@@ -11,20 +11,23 @@ public class User implements Parcelable{
     String email;
     String username;
     String fullName;
+    String imageUrl;
 
 
     public User() {}
 
-    public User(String email, String username, String fullName) {
+    public User(String email, String username, String fullName, String imageUrl) {
         this.email = email;
         this.username = username;
         this.fullName = fullName;
+        this.imageUrl = imageUrl;
     }
 
     protected User(Parcel in) {
         email = in.readString();
         username = in.readString();
         fullName = in.readString();
+        imageUrl = in.readString();
     }
 
     public static final Creator<User> CREATOR = new Creator<User>() {
@@ -63,6 +66,14 @@ public class User implements Parcelable{
         this.fullName = fullName;
     }
 
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -73,5 +84,6 @@ public class User implements Parcelable{
         dest.writeString(email);
         dest.writeString(username);
         dest.writeString(fullName);
+        dest.writeString(imageUrl);
     }
 }

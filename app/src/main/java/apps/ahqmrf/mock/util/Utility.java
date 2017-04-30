@@ -47,7 +47,7 @@ public class Utility {
         return pref.getBoolean(key, false);
     }
 
-    public static void putInt(Context context, String key, int value) {
+    public static void put(Context context, String key, int value) {
         SharedPreferences pref = context.getSharedPreferences(Const.PREF_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = pref.edit();
         editor.putInt(key, value);

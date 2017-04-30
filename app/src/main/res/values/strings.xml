@@ -27,4 +27,7 @@
     <string name="msg_reg_success">Registered successfully!</string>
     <string name="title_search">Search user</string>
     <string name="error_invalid_username">Username must be alphabetic</string>
+    <string name="upload_photo">Upload a profile picture</string>
+    <string name="button_choose">Choose</string>
+    <string name="error_invalid_path">Invalid file path</string>
 </resources>

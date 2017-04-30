@@ -1,11 +1,17 @@
 package apps.ahqmrf.mock.activity;
 
+import android.Manifest;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Build;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.MenuItem;
@@ -16,6 +22,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -24,6 +32,11 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+
+import java.io.File;
 
 import apps.ahqmrf.mock.R;
 import apps.ahqmrf.mock.util.Const;
@@ -37,18 +50,20 @@ public class RegisterActivity extends AppCompatActivity implements View.OnFocusC
 
     @BindView(R.id.app_toolbar) Toolbar toolbar;
 
-    @BindView(R.id.progressBar)        View     progressLayout;
+    @BindView(R.id.progressBar)            View     progressLayout;
     @BindView(R.id.input_full_name)        EditText fullNameInput;
     @BindView(R.id.input_username)         EditText usernameInput;
     @BindView(R.id.input_email)            EditText emailInput;
     @BindView(R.id.input_password)         EditText passwordInput;
     @BindView(R.id.input_confirm_password) EditText confirmPasswordInput;
+    @BindView(R.id.input_path)             EditText pathInput;
 
     @BindView(R.id.error_full_name)         TextView fullNameError;
     @BindView(R.id.error_username)          TextView usernameError;
     @BindView(R.id.error_email)             TextView emailError;
     @BindView(R.id.error_password)          TextView passwordError;
     @BindView(R.id.error_password_mismatch) TextView passwordMismatchError;
+    @BindView(R.id.error_invalid_path)      TextView pathError;
 
     @BindString(R.string.title_register)  String title;
     @BindString(R.string.error_reg)       String errorRegister;
@@ -58,8 +73,11 @@ public class RegisterActivity extends AppCompatActivity implements View.OnFocusC
     private String  username;
     private String  email;
     private String  password;
+    private String filePath;
     private boolean allValid;
+    private Uri uri;
     private DatabaseReference refUser = FirebaseDatabase.getInstance().getReference(Const.Route.USER_REF);
+    private StorageReference mStorage = FirebaseStorage.getInstance().getReference();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,6 +112,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnFocusC
         emailInput.setOnFocusChangeListener(this);
         passwordInput.setOnFocusChangeListener(this);
         confirmPasswordInput.setOnFocusChangeListener(this);
+        pathInput.setOnFocusChangeListener(this);
     }
 
     private void clearErrors() {
@@ -102,6 +121,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnFocusC
         emailError.setVisibility(View.GONE);
         passwordError.setVisibility(View.GONE);
         passwordMismatchError.setVisibility(View.GONE);
+        pathError.setVisibility(View.GONE);
     }
 
     private void setDefaultBorder() {
@@ -143,7 +163,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnFocusC
             allValid = false;
         }
 
-        if(!Utility.isValidUsername(username)) {
+        if (!Utility.isValidUsername(username)) {
             usernameError.setText(R.string.error_invalid_username);
             usernameError.setVisibility(View.VISIBLE);
             allValid = false;
@@ -178,6 +198,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnFocusC
         email = emailInput.getText().toString();
         password = passwordInput.getText().toString();
         String confirmPassword = confirmPasswordInput.getText().toString();
+        filePath = pathInput.getText().toString();
 
         if (TextUtils.isEmpty(email)) {
             emailError.setText(R.string.error_label_empty_field);
@@ -215,11 +236,17 @@ public class RegisterActivity extends AppCompatActivity implements View.OnFocusC
             allValid = false;
         }
 
-        if (allValid) register();
+        if(!TextUtils.isEmpty(filePath)) {
+            File file = new File(filePath);
+            if(!file.exists()) {
+                pathError.setVisibility(View.VISIBLE);
+                allValid = false;
+            }
+        }
+        if (allValid) uploadImage();
     }
 
     private void register() {
-        progressLayout.setVisibility(View.VISIBLE);
         FirebaseAuth auth = FirebaseAuth.getInstance();
         auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
             @Override
@@ -228,7 +255,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnFocusC
                 if (task.isSuccessful()) {
                     createUser();
                 } else {
-                    Toast.makeText(getApplicationContext(), errorRegister, Toast.LENGTH_SHORT).show();
+                    Utility.showToast(getApplicationContext(), errorRegister);
                 }
             }
         });
@@ -256,5 +283,97 @@ public class RegisterActivity extends AppCompatActivity implements View.OnFocusC
             onBackPressed();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @OnClick(R.id.button_choose)
+    public void checkReadExternalStoragePermission() {
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (ContextCompat.checkSelfPermission(this,
+                    Manifest.permission.READ_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED) {
+
+                if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                        Manifest.permission.READ_EXTERNAL_STORAGE)) {
+
+                } else {
+
+                    ActivityCompat.requestPermissions(this,
+                            new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                            Const.RequestCodes.READ_EXTERNAL_STORAGE);
+                }
+            } else {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                        Const.RequestCodes.READ_EXTERNAL_STORAGE);
+            }
+        } else {
+
+            openImageGallery();
+        }
+    }
+
+    private void openImageGallery() {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_PICK);
+        if (getPackageManager().resolveActivity(intent, 0) != null) {
+            startActivityForResult(Intent.createChooser(intent, "Select Picture"), Const.RequestCodes.REQUEST_BROWSE_GALLERY);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case Const.RequestCodes.READ_EXTERNAL_STORAGE: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    openImageGallery();
+
+                } else {
+                    Utility.showToast(this, "Permission required to select media");
+                }
+                break;
+            }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == Const.RequestCodes.REQUEST_BROWSE_GALLERY && resultCode == RESULT_OK) {
+            uri = data.getData();
+            if (null != uri) {
+                filePath = Utility.getRealPathFromURI(this, uri);
+                pathInput.setText(filePath);
+            }
+        }
+    }
+
+    private void uploadImage() {
+        if(TextUtils.isEmpty(filePath)) {
+            progressLayout.setVisibility(View.VISIBLE);
+            register();
+            return;
+        }
+        File file = new File(filePath);
+        double length = file.length() / 1024;
+        if(length > 500) {
+            Utility.showToast(this, "File size must be less than 500 kB");
+            return;
+        }
+        progressLayout.setVisibility(View.VISIBLE);
+        StorageReference photoStorage = mStorage.child(username).child(Const.Keys.PROFILE_PIC).child(uri.getLastPathSegment());
+        photoStorage.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                Utility.showToast(getApplicationContext(), "Uploaded successfully");
+                register();
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Utility.showToast(getApplicationContext(), "Failed to upload photo");
+                register();
+            }
+        });
     }
 }

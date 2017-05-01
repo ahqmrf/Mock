@@ -2,6 +2,7 @@ package apps.ahqmrf.mock.activity;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
@@ -14,10 +15,15 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.listener.ImageLoadingProgressListener;
+import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
 import apps.ahqmrf.mock.BaseActivity;
 import apps.ahqmrf.mock.R;
 import apps.ahqmrf.mock.util.Const;
+import apps.ahqmrf.mock.util.MyDisplayImageOptions;
 import apps.ahqmrf.mock.util.Utility;
 import butterknife.BindString;
 import butterknife.BindView;
@@ -65,13 +71,28 @@ public class SettingsActivity extends BaseActivity {
             progressLayout.setVisibility(View.GONE);
         } else {
             StorageReference photoStorage = mStorage.child(username).child(Const.Keys.PROFILE_PIC).child(imageUrl);
-            final long ONE_MEGABYTE = 1024 * 1024;
-            photoStorage.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+            photoStorage.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                 @Override
-                public void onSuccess(byte[] bytes) {
-                    Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                    mImageView.setImageBitmap(bitmap);
-                    progressLayout.setVisibility(View.GONE);
+                public void onSuccess(Uri uri) {
+                    ImageLoader.getInstance().displayImage(
+                            uri.toString(),
+                            mImageView,
+                            MyDisplayImageOptions.getInstance().getDisplayImageOptions(), new SimpleImageLoadingListener() {
+                                @Override
+                                public void onLoadingStarted(String imageUri, View view) {
+                                    progressLayout.setVisibility(View.VISIBLE);
+                                }
+
+                                @Override
+                                public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
+                                    progressLayout.setVisibility(View.GONE);
+                                }
+
+                                @Override
+                                public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+                                    progressLayout.setVisibility(View.GONE);
+                                }
+                            });
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override

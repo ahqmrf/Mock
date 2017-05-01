@@ -31,4 +31,6 @@
     <string name="button_choose">Choose</string>
     <string name="error_invalid_path">Invalid file path</string>
     <string name="title_settings">Settings</string>
+    <string name="change_password">label_change_pass</string>
+    <string name="label_change_pass">Change password</string>
 </resources>

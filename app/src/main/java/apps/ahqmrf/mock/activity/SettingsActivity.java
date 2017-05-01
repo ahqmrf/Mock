@@ -74,25 +74,7 @@ public class SettingsActivity extends BaseActivity {
             photoStorage.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                 @Override
                 public void onSuccess(Uri uri) {
-                    ImageLoader.getInstance().displayImage(
-                            uri.toString(),
-                            mImageView,
-                            MyDisplayImageOptions.getInstance().getDisplayImageOptions(), new SimpleImageLoadingListener() {
-                                @Override
-                                public void onLoadingStarted(String imageUri, View view) {
-                                    progressLayout.setVisibility(View.VISIBLE);
-                                }
-
-                                @Override
-                                public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
-                                    progressLayout.setVisibility(View.GONE);
-                                }
-
-                                @Override
-                                public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-                                    progressLayout.setVisibility(View.GONE);
-                                }
-                            });
+                    Utility.loadImage(uri.toString(), mImageView, progressLayout);
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override

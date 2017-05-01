@@ -84,7 +84,7 @@ public class MyLocationActivity extends BaseActivity implements OnMapReadyCallba
         refState = location.child(Const.Keys.STATE);
         refUsername = location.child(Const.Keys.USERNAME);
         refUsername.setValue(thisUserName);
-        mImageLocation.setColorFilter(ContextCompat.getColor(this, R.color.colorPrimary));
+        mImageLocation.setColorFilter(ContextCompat.getColor(this, R.color.black));
         setToolbarWithBackArrow();
     }
 

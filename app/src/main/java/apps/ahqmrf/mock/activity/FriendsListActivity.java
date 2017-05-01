@@ -18,7 +18,7 @@ public class FriendsListActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_friends_list);
         ButterKnife.bind(this);
-        mImageFriends.setColorFilter(ContextCompat.getColor(this, R.color.colorPrimary));
+        mImageFriends.setColorFilter(ContextCompat.getColor(this, R.color.black));
         setToolbarWithBackArrow();
     }
 

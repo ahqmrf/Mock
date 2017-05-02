@@ -29,7 +29,7 @@ import apps.ahqmrf.mock.activity.FriendsListActivity;
 import apps.ahqmrf.mock.activity.MyLocationActivity;
 import apps.ahqmrf.mock.activity.SettingsActivity;
 import apps.ahqmrf.mock.activity.SignInActivity;
-import apps.ahqmrf.mock.activity.TrackerActivity;
+import apps.ahqmrf.mock.activity.UserActivity;
 import apps.ahqmrf.mock.adapter.UserListAdapter;
 import apps.ahqmrf.mock.util.Const;
 import apps.ahqmrf.mock.util.Utility;
@@ -45,6 +45,9 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
     @Nullable
     @BindView(R.id.app_toolbar)
     protected Toolbar toolbar;
+
+    @BindView(R.id.layout_progress_recycler)
+    protected View progressList;
 
     @Nullable
     @BindView(R.id.fab_check_in)
@@ -98,6 +101,7 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
     }
 
     protected void getAllUsers() {
+        progressList.setVisibility(View.VISIBLE);
         FirebaseDatabase.getInstance().getReference(Const.Route.USER_REF).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -107,6 +111,7 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 System.out.println("The read failed: " + databaseError.getCode());
+                progressList.setVisibility(View.GONE);
             }
         });
     }
@@ -120,13 +125,15 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
             String username = (String) singleUser.get(Const.Keys.USERNAME);
             String fullName = (String) singleUser.get(Const.Keys.NAME);
             String imageUrl = (String) singleUser.get(Const.Keys.PROFILE_PIC);
-            userList.add(new User(email, username, fullName, imageUrl));
+            String currUsername = Utility.getString(this, Const.Keys.USERNAME);
+            if(!currUsername.equals(username)) userList.add(new User(email, username, fullName, imageUrl));
         }
 
         LinearLayoutManager manager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(manager);
         mAdapter = new UserListAdapter(this, this, userList);
         recyclerView.setAdapter(mAdapter);
+        progressList.setVisibility(View.GONE);
     }
 
     protected void setToolbarWithBackArrow() {
@@ -237,9 +244,10 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
 
     @Override
     public void onUserClick(User user) {
-        Intent intent = new Intent(this, TrackerActivity.class);
+        Intent intent = new Intent(this, UserActivity.class);
         intent.putExtra(Const.Keys.USER, user);
         startActivity(intent);
+        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
         item.collapseActionView();
     }
 }

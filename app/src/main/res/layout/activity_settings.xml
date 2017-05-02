@@ -273,15 +273,12 @@
 
     </ScrollView>
 
-    <android.support.v7.widget.RecyclerView
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/userList"
+    <include
+        layout="@layout/list_layout_invisible"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/bottom_layout"
-        android:layout_below="@id/app_toolbar"
-        android:background="@color/white"
-        android:visibility="gone"/>
+        android:layout_below="@id/app_toolbar"/>
 
     <include
         android:id="@+id/bottom_layout"

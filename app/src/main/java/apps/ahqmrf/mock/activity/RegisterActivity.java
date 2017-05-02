@@ -345,7 +345,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnFocusC
         if (requestCode == Const.RequestCodes.REQUEST_BROWSE_GALLERY && resultCode == RESULT_OK) {
             uri = data.getData();
             if (null != uri) {
-                filePath = Utility.getRealPathFromURI(this, uri);
+                filePath = Utility.getFileUrl(this, uri);
                 pathInput.setText(filePath);
             }
         }

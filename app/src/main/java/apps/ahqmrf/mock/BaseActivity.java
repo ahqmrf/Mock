@@ -11,6 +11,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -92,8 +93,8 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
     protected ArrayList<User> userList;
     protected ArrayList<User> searchResultList;
     protected UserListAdapter mAdapter;
-    protected MenuItem item;
-    protected boolean wasSearchClicked;
+    protected MenuItem        item;
+    protected boolean         wasSearchClicked;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -153,14 +154,14 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
             @Override
             public boolean onMenuItemActionExpand(MenuItem item) {
                 recyclerView.setVisibility(View.VISIBLE);
-                if(fab != null) fab.setVisibility(View.INVISIBLE);
+                if (fab != null) fab.setVisibility(View.INVISIBLE);
                 return true;
             }
 
             @Override
             public boolean onMenuItemActionCollapse(MenuItem item) {
                 recyclerView.setVisibility(View.GONE);
-                if(fab != null) fab.setVisibility(View.VISIBLE);
+                if (fab != null) fab.setVisibility(View.VISIBLE);
                 return true;
             }
         });
@@ -194,7 +195,7 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
             trigger(SignInActivity.class);
         }
 
-        if(itemId == R.id.menu_item_settings) {
+        if (itemId == R.id.menu_item_settings) {
             trigger(SettingsActivity.class);
             item.collapseActionView();
         }
@@ -213,7 +214,7 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
     public boolean onQueryTextSubmit(String query) {
         progressList.setVisibility(View.VISIBLE);
         query = query.toLowerCase();
-        if(wasSearchClicked) findResult(query);
+        if (wasSearchClicked) findResult(query);
         else {
             wasSearchClicked = true;
             getAllUsers(query);
@@ -223,12 +224,13 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
 
     protected void findResult(String query) {
         searchResultList = new ArrayList<>();
-        for(User user : userList) {
-            if(user.getFullName().toLowerCase().contains(query) || user.getUsername().toLowerCase().contains(query)) {
+        for (User user : userList) {
+            if (user.getFullName().toLowerCase().contains(query) || user.getUsername().toLowerCase().contains(query)) {
                 searchResultList.add(user);
             }
         }
-        if (searchResultList.isEmpty()) Utility.showToast(this, "No search result found for " + query);
+        if (searchResultList.isEmpty())
+            Utility.showToast(this, "No search result found for " + query);
         if (mAdapter != null) mAdapter.setFilter(searchResultList);
         progressList.setVisibility(View.GONE);
     }
@@ -244,6 +246,12 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
 
     @Override
     public void onUserClick(User user) {
+        String username = Utility.getString(this, Const.Keys.USERNAME);
+        if (!TextUtils.isEmpty(username) && username.toLowerCase().contains(user.getUsername())) {
+            trigger(SettingsActivity.class);
+            item.collapseActionView();
+            return;
+        }
         Intent intent = new Intent(this, UserActivity.class);
         intent.putExtra(Const.Keys.USER, user);
         startActivity(intent);

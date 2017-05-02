@@ -33,4 +33,6 @@
     <string name="title_settings">Settings</string>
     <string name="change_password">label_change_pass</string>
     <string name="label_change_pass">Change password</string>
+    <string name="button_add_as_friend">+ Add as friend</string>
+    <string name="button_send_a_message">Send message</string>
 </resources>

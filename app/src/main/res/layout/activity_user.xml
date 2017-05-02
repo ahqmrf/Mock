@@ -10,15 +10,62 @@
         android:id="@+id/app_toolbar"
         layout="@layout/toolbar"/>
 
-    <LinearLayout
+    <RelativeLayout
+        android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/bottom_layout"
-        android:layout_below="@id/app_toolbar"
-        android:orientation="vertical">
+        android:layout_below="@id/app_toolbar">
 
+        <ImageView
+            android:id="@+id/image_main"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            tools:src="@drawable/pp"/>
 
-    </LinearLayout>
+        <RelativeLayout
+            android:id="@+id/layout_names"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/black_transparent"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <ImageView
+                android:id="@+id/image_more"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:padding="8dp"
+                android:background="?attr/selectableItemBackground"
+                android:src="@drawable/ic_more_vert_black_24dp"
+                android:layout_alignParentEnd="true"
+                android:tint="@color/white"/>
+
+            <TextView
+                android:layout_toStartOf="@id/image_more"
+                android:id="@+id/text_full_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="start"
+                android:textColor="@color/white"
+                android:textSize="24sp"
+                tools:text="Ariful Hoque Maruf"/>
+
+            <TextView
+                android:layout_below="@id/text_full_name"
+                android:id="@+id/text_username"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:gravity="start"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                tools:text="ahqmrf"/>
+
+        </RelativeLayout>
+
+    </RelativeLayout>
 
     <include
         layout="@layout/list_layout_invisible"

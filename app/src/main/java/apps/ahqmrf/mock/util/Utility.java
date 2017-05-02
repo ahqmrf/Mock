@@ -73,7 +73,7 @@ public class Utility {
         return true;
     }
 
-    public static String getRealPathFromURI(Context context, Uri contentUri) {
+    public static String getFileUrl(Context context, Uri contentUri) {
         Cursor cursor = null;
         try {
             String[] proj = {MediaStore.Images.Media.DATA};

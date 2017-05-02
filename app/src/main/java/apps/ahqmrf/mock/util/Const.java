@@ -26,6 +26,7 @@ public final class Const {
         public static final String EMAIL           = "email";
         public static final String LOGGED_IN       = "isLoggedIn";
         public static final String PROFILE_PIC     = "imageUrl";
+        public static final String SERVICE_STARTED = "locationService";
     }
 
     public static final String PREF_NAME = "mock.pref";

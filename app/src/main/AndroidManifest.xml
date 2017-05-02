@@ -39,8 +39,12 @@
         <activity
             android:name=".activity.SettingsActivity"
             android:launchMode="singleTask"/>
-        <activity android:name=".activity.UserActivity">
-        </activity>
+        <activity android:name=".activity.UserActivity"/>
+
+        <service
+            android:name=".service.LocationUpdateService"
+            android:enabled="true"
+            android:exported="true"/>
     </application>
 
 </manifest>

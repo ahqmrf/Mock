@@ -41,6 +41,7 @@ import java.util.Locale;
 
 import apps.ahqmrf.mock.BaseActivity;
 import apps.ahqmrf.mock.R;
+import apps.ahqmrf.mock.service.LocationUpdateService;
 import apps.ahqmrf.mock.util.Const;
 import apps.ahqmrf.mock.util.Utility;
 import butterknife.BindString;
@@ -86,6 +87,11 @@ public class MyLocationActivity extends BaseActivity implements OnMapReadyCallba
         refUsername.setValue(thisUserName);
         mImageLocation.setColorFilter(ContextCompat.getColor(this, R.color.black));
         setToolbarWithBackArrow();
+        boolean serviceStarted = Utility.getBoolean(this, Const.Keys.SERVICE_STARTED);
+        if(!serviceStarted) {
+            Utility.put(this, Const.Keys.SERVICE_STARTED, true);
+            startService(new Intent(this, LocationUpdateService.class));
+        }
     }
 
     @Override

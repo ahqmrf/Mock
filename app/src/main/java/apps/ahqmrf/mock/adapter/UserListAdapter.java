@@ -1,16 +1,27 @@
 package apps.ahqmrf.mock.adapter;
 
 import android.content.Context;
+import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 
 import apps.ahqmrf.mock.R;
 import apps.ahqmrf.mock.User;
+import apps.ahqmrf.mock.util.Const;
+import apps.ahqmrf.mock.util.Utility;
 
 /**
  * Created by bsse0 on 4/29/2017.
@@ -22,9 +33,9 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.UserVi
         void onUserClick(User user);
     }
 
-    private Context mContext;
+    private Context           mContext;
     private UserClickCallback mCallback;
-    private ArrayList<User> mItems;
+    private ArrayList<User>   mItems;
 
     public UserListAdapter(Context mContext, UserClickCallback mCallback, ArrayList<User> mItems) {
         this.mContext = mContext;
@@ -39,14 +50,30 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.UserVi
     }
 
     @Override
-    public void onBindViewHolder(UserViewHolder holder, int position) {
-        holder.fullName.setText(mItems.get(position).getFullName());
-        holder.username.setText("Username: " + mItems.get(position).getUsername());
+    public void onBindViewHolder(final UserViewHolder holder, int position) {
+        User user = mItems.get(position);
+        holder.fullName.setText(user.getFullName());
+        holder.username.setText(user.getUsername());
+        if (!TextUtils.isEmpty(user.getImageUrl())) {
+            StorageReference photoStorage =
+                    FirebaseStorage.getInstance().getReference().child(user.getUsername()).child(Const.Keys.PROFILE_PIC).child(user.getImageUrl());
+            photoStorage.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                @Override
+                public void onSuccess(Uri uri) {
+                    Utility.loadImage(uri.toString(), holder.imageView, holder.progressLayout);
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    holder.progressLayout.setVisibility(View.GONE);
+                }
+            });
+        } else holder.progressLayout.setVisibility(View.GONE);
     }
 
     @Override
     public int getItemCount() {
-        return mItems == null? 0 : mItems.size();
+        return mItems == null ? 0 : mItems.size();
     }
 
     public void setFilter(ArrayList<User> newList) {
@@ -57,17 +84,20 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.UserVi
 
     class UserViewHolder extends RecyclerView.ViewHolder {
         TextView fullName, username;
-        View layout;
+        View layout, progressLayout;
+        ImageView imageView;
 
         public UserViewHolder(View itemView) {
             super(itemView);
             fullName = (TextView) itemView.findViewById(R.id.text_full_name);
             username = (TextView) itemView.findViewById(R.id.text_username);
+            imageView = (ImageView) itemView.findViewById(R.id.image_main);
+            progressLayout = itemView.findViewById(R.id.layout_progress);
             layout = itemView.findViewById(R.id.item_list_user);
             layout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(mCallback != null) {
+                    if (mCallback != null) {
                         mCallback.onUserClick(mItems.get(getAdapterPosition()));
                     }
                 }

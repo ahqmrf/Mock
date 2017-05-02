@@ -90,8 +90,10 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
     }
 
     protected ArrayList<User> userList;
+    protected ArrayList<User> searchResultList;
     protected UserListAdapter mAdapter;
     protected MenuItem item;
+    protected boolean wasSearchClicked;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -101,7 +103,6 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
     }
 
     protected void getAllUsers(final String searchKey) {
-        progressList.setVisibility(View.VISIBLE);
         FirebaseDatabase.getInstance().getReference(Const.Route.USER_REF).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -119,21 +120,16 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
     protected void prepareUserList(Map<String, Object> value, String query) {
         userList = new ArrayList<>();
         for (Map.Entry<String, Object> entry : value.entrySet()) {
-
             //Get user map
             Map singleUser = (Map) entry.getValue();
             String email = (String) singleUser.get(Const.Keys.EMAIL);
             String username = (String) singleUser.get(Const.Keys.USERNAME);
             String fullName = (String) singleUser.get(Const.Keys.NAME);
             String imageUrl = (String) singleUser.get(Const.Keys.PROFILE_PIC);
-            if (fullName.toLowerCase().contains(query)
-                    || username.toLowerCase().contains(query)) {
-                userList.add(new User(email, username, fullName, imageUrl));
-            }
+            userList.add(new User(email, username, fullName, imageUrl));
+
         }
-        if (userList.isEmpty()) Utility.showToast(this, "No search result found for " + query);
-        if (mAdapter != null) mAdapter.setFilter(userList);
-        progressList.setVisibility(View.GONE);
+        findResult(query);
     }
 
     protected void setToolbarWithBackArrow() {
@@ -181,6 +177,8 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
         recyclerView.setLayoutManager(manager);
         mAdapter = new UserListAdapter(this, this, userList);
         recyclerView.setAdapter(mAdapter);
+        wasSearchClicked = false;
+        userList = new ArrayList<>();
         onViewCreated();
     }
 
@@ -213,9 +211,26 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
 
     @Override
     public boolean onQueryTextSubmit(String query) {
+        progressList.setVisibility(View.VISIBLE);
         query = query.toLowerCase();
-        getAllUsers(query);
+        if(wasSearchClicked) findResult(query);
+        else {
+            wasSearchClicked = true;
+            getAllUsers(query);
+        }
         return true;
+    }
+
+    protected void findResult(String query) {
+        searchResultList = new ArrayList<>();
+        for(User user : userList) {
+            if(user.getFullName().toLowerCase().contains(query) || user.getUsername().toLowerCase().contains(query)) {
+                searchResultList.add(user);
+            }
+        }
+        if (searchResultList.isEmpty()) Utility.showToast(this, "No search result found for " + query);
+        if (mAdapter != null) mAdapter.setFilter(searchResultList);
+        progressList.setVisibility(View.GONE);
     }
 
     @Override

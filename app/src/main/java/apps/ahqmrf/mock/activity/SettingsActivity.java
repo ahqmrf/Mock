@@ -70,18 +70,7 @@ public class SettingsActivity extends BaseActivity {
         if (TextUtils.isEmpty(imageUrl)) {
             progressLayout.setVisibility(View.GONE);
         } else {
-            StorageReference photoStorage = mStorage.child(username).child(Const.Keys.PROFILE_PIC).child(imageUrl);
-            photoStorage.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                @Override
-                public void onSuccess(Uri uri) {
-                    Utility.loadImage(uri.toString(), mImageView, progressLayout);
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    progressLayout.setVisibility(View.GONE);
-                }
-            });
+            Utility.loadImage(imageUrl, mImageView, progressLayout);
         }
     }
 }

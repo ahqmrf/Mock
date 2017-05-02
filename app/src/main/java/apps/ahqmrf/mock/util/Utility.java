@@ -89,6 +89,10 @@ public class Utility {
     }
 
     public static void loadImage(String path, ImageView imageView, final View progressLayout) {
+        if (TextUtils.isEmpty(path)) {
+            progressLayout.setVisibility(View.GONE);
+            return;
+        }
         ImageLoader.getInstance().displayImage(
                 path,
                 imageView,

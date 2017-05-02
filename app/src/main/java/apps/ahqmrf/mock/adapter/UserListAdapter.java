@@ -54,21 +54,7 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.UserVi
         User user = mItems.get(position);
         holder.fullName.setText(user.getFullName());
         holder.username.setText(user.getUsername());
-        if (!TextUtils.isEmpty(user.getImageUrl())) {
-            StorageReference photoStorage =
-                    FirebaseStorage.getInstance().getReference().child(user.getUsername()).child(Const.Keys.PROFILE_PIC).child(user.getImageUrl());
-            photoStorage.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                @Override
-                public void onSuccess(Uri uri) {
-                    Utility.loadImage(uri.toString(), holder.imageView, holder.progressLayout);
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    holder.progressLayout.setVisibility(View.GONE);
-                }
-            });
-        } else holder.progressLayout.setVisibility(View.GONE);
+        Utility.loadImage(user.getImageUrl(), holder.imageView, holder.progressLayout);
     }
 
     @Override

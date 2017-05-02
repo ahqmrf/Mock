@@ -246,14 +246,14 @@ public class RegisterActivity extends AppCompatActivity implements View.OnFocusC
         if (allValid) uploadImage();
     }
 
-    private void register() {
+    private void register(final String imageUrl) {
         FirebaseAuth auth = FirebaseAuth.getInstance();
         auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 progressLayout.setVisibility(View.GONE);
                 if (task.isSuccessful()) {
-                    createUser();
+                    createUser(imageUrl);
                 } else {
                     Utility.showToast(getApplicationContext(), errorRegister);
                 }
@@ -261,19 +261,18 @@ public class RegisterActivity extends AppCompatActivity implements View.OnFocusC
         });
     }
 
-    private void createUser() {
+    private void createUser(String imageUrl) {
         DatabaseReference database = FirebaseDatabase.getInstance().getReference(Const.Route.USER_REF).child(username);
         database.child(Const.Keys.NAME).setValue(fullName);
         database.child(Const.Keys.USERNAME).setValue(username);
         database.child(Const.Keys.EMAIL).setValue(email);
-        String path = "";
-        if(uri != null) path = uri.getLastPathSegment();
-        database.child(Const.Keys.PROFILE_PIC).setValue(path);
+        if(TextUtils.isEmpty(imageUrl)) imageUrl = "";
+        database.child(Const.Keys.PROFILE_PIC).setValue(imageUrl);
         Utility.showToast(this, successRegister);
         Utility.put(this, Const.Keys.NAME, fullName);
         Utility.put(this, Const.Keys.USERNAME, username);
         Utility.put(this, Const.Keys.EMAIL, email);
-        Utility.put(this, Const.Keys.PROFILE_PIC, path);
+        Utility.put(this, Const.Keys.PROFILE_PIC, imageUrl);
         Utility.put(this, Const.Keys.LOGGED_IN, true);
         Intent intent = new Intent(getApplicationContext(), MyLocationActivity.class);
         startActivity(intent);
@@ -355,7 +354,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnFocusC
     private void uploadImage() {
         if(TextUtils.isEmpty(filePath)) {
             progressLayout.setVisibility(View.VISIBLE);
-            register();
+            register("");
             return;
         }
         File file = new File(filePath);
@@ -365,18 +364,29 @@ public class RegisterActivity extends AppCompatActivity implements View.OnFocusC
             return;
         }
         progressLayout.setVisibility(View.VISIBLE);
-        StorageReference photoStorage = mStorage.child(username).child(Const.Keys.PROFILE_PIC).child(uri.getLastPathSegment());
+        final StorageReference photoStorage = mStorage.child(username).child(Const.Keys.PROFILE_PIC).child(uri.getLastPathSegment());
         photoStorage.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                Utility.showToast(getApplicationContext(), "Uploaded successfully");
-                register();
+                photoStorage.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri uri) {
+
+                        Utility.showToast(getApplicationContext(), "Uploaded successfully");
+                        register(uri.toString());
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+
+                    }
+                });
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
                 Utility.showToast(getApplicationContext(), "Failed to upload photo");
-                register();
+                register("");
             }
         });
     }

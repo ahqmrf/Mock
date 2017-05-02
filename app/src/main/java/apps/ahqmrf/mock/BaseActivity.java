@@ -100,12 +100,12 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
     }
 
-    protected void getAllUsers() {
+    protected void getAllUsers(final String searchKey) {
         progressList.setVisibility(View.VISIBLE);
         FirebaseDatabase.getInstance().getReference(Const.Route.USER_REF).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                prepareUserList((Map<String, Object>) dataSnapshot.getValue());
+                prepareUserList((Map<String, Object>) dataSnapshot.getValue(), searchKey);
             }
 
             @Override
@@ -116,7 +116,8 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
         });
     }
 
-    protected void prepareUserList(Map<String, Object> value) {
+    protected void prepareUserList(Map<String, Object> value, String query) {
+        userList = new ArrayList<>();
         for (Map.Entry<String, Object> entry : value.entrySet()) {
 
             //Get user map
@@ -125,14 +126,13 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
             String username = (String) singleUser.get(Const.Keys.USERNAME);
             String fullName = (String) singleUser.get(Const.Keys.NAME);
             String imageUrl = (String) singleUser.get(Const.Keys.PROFILE_PIC);
-            String currUsername = Utility.getString(this, Const.Keys.USERNAME);
-            if(!currUsername.equals(username)) userList.add(new User(email, username, fullName, imageUrl));
+            if (fullName.toLowerCase().contains(query)
+                    || username.toLowerCase().contains(query)) {
+                userList.add(new User(email, username, fullName, imageUrl));
+            }
         }
-
-        LinearLayoutManager manager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
-        recyclerView.setLayoutManager(manager);
-        mAdapter = new UserListAdapter(this, this, userList);
-        recyclerView.setAdapter(mAdapter);
+        if (userList.isEmpty()) Utility.showToast(this, "No search result found for " + query);
+        if (mAdapter != null) mAdapter.setFilter(userList);
         progressList.setVisibility(View.GONE);
     }
 
@@ -177,8 +177,10 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         setToolbarTitle();
-        userList = new ArrayList<>();
-        getAllUsers();
+        LinearLayoutManager manager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        recyclerView.setLayoutManager(manager);
+        mAdapter = new UserListAdapter(this, this, userList);
+        recyclerView.setAdapter(mAdapter);
         onViewCreated();
     }
 
@@ -196,6 +198,7 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
 
         if(itemId == R.id.menu_item_settings) {
             trigger(SettingsActivity.class);
+            item.collapseActionView();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -211,31 +214,13 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
     @Override
     public boolean onQueryTextSubmit(String query) {
         query = query.toLowerCase();
-        ArrayList<User> newList = new ArrayList<>();
-        for (User user : userList) {
-            if (user.getFullName().toLowerCase().contains(query)
-                    || user.getUsername().toLowerCase().contains(query)) {
-                newList.add(user);
-            }
-        }
-        if (newList.isEmpty()) Utility.showToast(this, "No search result found for " + query);
-        if (mAdapter != null) mAdapter.setFilter(newList);
+        getAllUsers(query);
         return true;
     }
 
     @Override
     public boolean onQueryTextChange(String newText) {
-        newText = newText.toLowerCase();
-        ArrayList<User> newList = new ArrayList<>();
-        for (User user : userList) {
-            if (user.getFullName().toLowerCase().contains(newText)
-                    || user.getUsername().toLowerCase().contains(newText)) {
-                newList.add(user);
-            }
-        }
-        ;
-        if (mAdapter != null) mAdapter.setFilter(newList);
-        return true;
+        return false;
     }
 
     protected abstract void setToolbarTitle();

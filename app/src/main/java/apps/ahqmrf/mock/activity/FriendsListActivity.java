@@ -83,12 +83,14 @@ public class FriendsListActivity extends BaseActivity {
             String username = (String) singleUser.get(Const.Keys.USERNAME);
             String fullName = (String) singleUser.get(Const.Keys.NAME);
             String imageUrl = (String) singleUser.get(Const.Keys.PROFILE_PIC);
-            mItems.add(new User(email, username, fullName, imageUrl));
+            String status = (String) singleUser.get(Const.Keys.STATUS);
+            if(status.equals(Const.Keys.FRIEND)) mItems.add(new User(email, username, fullName, imageUrl));
         }
 
         mLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(mLayoutManager);
         UserListAdapter adapter = new UserListAdapter(this, this, mItems);
         recyclerView.setAdapter(adapter);
+        if(mItems.isEmpty()) noFriends.setVisibility(View.VISIBLE);
     }
 }

@@ -8,6 +8,7 @@ import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -30,12 +31,15 @@ import butterknife.ButterKnife;
 public class NotificationActivity extends BaseActivity implements NotificationListAdapter.Callback {
 
     @BindView(R.id.recycler_requests) RecyclerView recyclerView;
+    @BindView(R.id.text_no_notification)
+    TextView noNotification;
 
     private NotificationListAdapter mAdapter;
     private LinearLayoutManager     mLayoutManager;
     private ArrayList<Object>       mItems;
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private User self;
+    private int size = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,7 +81,10 @@ public class NotificationActivity extends BaseActivity implements NotificationLi
     }
 
     private void prepareRequestList(Map<String, Object> value) {
-        if(value == null) return;
+        if(value == null) {
+            noNotification.setVisibility(View.VISIBLE);
+            return;
+        }
         mItems = new ArrayList<>();
         for (Map.Entry<String, Object> entry : value.entrySet()) {
             //Get user map
@@ -93,8 +100,7 @@ public class NotificationActivity extends BaseActivity implements NotificationLi
         recyclerView.setLayoutManager(mLayoutManager);
         mAdapter = new NotificationListAdapter(this, this, mItems);
         recyclerView.setAdapter(mAdapter);
-
-        if(mItems.isEmpty()) Utility.showToast(this, "No new notifications");
+        size = mItems.size();
     }
 
     @Override
@@ -112,6 +118,8 @@ public class NotificationActivity extends BaseActivity implements NotificationLi
         setValues(database.getReference(Const.Route.FRIEND).child(user.getUsername()).child(self.getUsername()), user, Const.Keys.FRIEND);
         database.getReference(Const.Route.REQUEST).child(self.getUsername()).child(user.getUsername()).removeValue();
         updateNotificationIcon();
+        size--;
+        if(size == 0) noNotification.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -119,6 +127,8 @@ public class NotificationActivity extends BaseActivity implements NotificationLi
         database.getReference(Const.Route.FRIEND).child(self.getUsername()).child(user.getUsername()).removeValue();
         database.getReference(Const.Route.FRIEND).child(user.getUsername()).child(self.getUsername()).removeValue();
         database.getReference(Const.Route.REQUEST).child(self.getUsername()).child(user.getUsername()).removeValue();
+        size--;
+        if(size == 0) noNotification.setVisibility(View.VISIBLE);
     }
 
     private void setValues(DatabaseReference reference, User user, String status) {

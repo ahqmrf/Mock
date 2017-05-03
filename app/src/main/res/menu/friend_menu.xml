@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/menu_item_track"
+        android:onClick="openMap"
+        android:title="@string/menu_track_on_map"/>
+    <item
+        android:id="@+id/menu_msg"
+        android:title="@string/menu_send_message"/>
+    <item
+        android:id="@+id/menu_unfriend"
+        android:title="@string/menu_unfriend"
+        android:onClick="unfriend"/>
+</menu>

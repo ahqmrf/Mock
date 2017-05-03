@@ -17,6 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -28,6 +29,7 @@ import java.util.Map;
 
 import apps.ahqmrf.mock.activity.FriendsListActivity;
 import apps.ahqmrf.mock.activity.MyLocationActivity;
+import apps.ahqmrf.mock.activity.NotificationActivity;
 import apps.ahqmrf.mock.activity.SettingsActivity;
 import apps.ahqmrf.mock.activity.SignInActivity;
 import apps.ahqmrf.mock.activity.UserActivity;
@@ -53,6 +55,9 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
     @Nullable
     @BindView(R.id.fab_check_in)
     protected FloatingActionButton fab;
+
+    @BindView(R.id.text_notification)
+    protected TextView notificationIcon;
 
     @BindView(R.id.userList)
     protected RecyclerView recyclerView;
@@ -88,6 +93,7 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
 
     @OnClick(R.id.view_notification)
     public void showNotification() {
+        trigger(NotificationActivity.class);
     }
 
     protected ArrayList<User> userList;
@@ -180,7 +186,33 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
         recyclerView.setAdapter(mAdapter);
         wasSearchClicked = false;
         userList = new ArrayList<>();
+        updateNotificationIcon();
         onViewCreated();
+    }
+
+    protected void updateNotificationIcon() {
+        String username = Utility.getString(this, Const.Keys.USERNAME);
+        progressList.setVisibility(View.VISIBLE);
+        FirebaseDatabase.getInstance().getReference(Const.Route.REQUEST).child(username).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                progressList.setVisibility(View.GONE);
+                if (dataSnapshot.getChildrenCount() > 0) {
+                    notificationIcon.setText("" + dataSnapshot.getChildrenCount());
+                    notificationIcon.setVisibility(View.VISIBLE);
+                }
+                else {
+                    notificationIcon.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                progressList.setVisibility(View.GONE);
+                notificationIcon.setVisibility(View.GONE);
+                Utility.showToast(getApplicationContext(), "Failed to retrieve notification!");
+            }
+        });
     }
 
     @Override
@@ -208,6 +240,12 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
             startActivity(intent);
             overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        updateNotificationIcon();
     }
 
     @Override
@@ -245,13 +283,52 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
     protected abstract void onViewCreated();
 
     @Override
-    public void onUserClick(User user) {
+    public void onUserClick(final User user) {
         String username = Utility.getString(this, Const.Keys.USERNAME);
-        if (!TextUtils.isEmpty(username) && username.toLowerCase().contains(user.getUsername())) {
-            trigger(SettingsActivity.class);
-            item.collapseActionView();
+        if (!TextUtils.isEmpty(username)) {
+            if (username.toLowerCase().contains(user.getUsername())) {
+                trigger(SettingsActivity.class);
+                item.collapseActionView();
+            }
+            else {
+                final Intent intent = new Intent(this, UserActivity.class);
+                intent.putExtra(Const.Keys.USER, user);
+                progressList.setVisibility(View.VISIBLE);
+                FirebaseDatabase.getInstance().getReference(Const.Route.FRIEND).child(username).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        progressList.setVisibility(View.GONE);
+                        if (dataSnapshot.hasChild(user.getUsername())) {
+                            String val = dataSnapshot.child(user.getUsername()).child(Const.Keys.STATUS).getValue(String.class);
+                            if(val.equals(Const.Keys.FRIEND))
+                                intent.putExtra(Const.Keys.USER_TYPE, Const.Keys.FRIEND);
+                            else if (val.equals(Const.Keys.REQUESTED)) intent.putExtra(Const.Keys.USER_TYPE, Const.Keys.REQUESTED);
+                            else intent.putExtra(Const.Keys.USER_TYPE, Const.Keys.WANNABE);
+                            startActivity(intent);
+                            overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+                            item.collapseActionView();
+                        }
+                        else {
+                            intent.putExtra(Const.Keys.USER_TYPE, Const.Keys.STRANGER);
+                            startActivity(intent);
+                            overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+                            item.collapseActionView();
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        progressList.setVisibility(View.GONE);
+                        intent.putExtra(Const.Keys.USER_TYPE, Const.Keys.STRANGER);
+                        startActivity(intent);
+                        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+                        item.collapseActionView();
+                    }
+                });
+            }
             return;
         }
+
         Intent intent = new Intent(this, UserActivity.class);
         intent.putExtra(Const.Keys.USER, user);
         startActivity(intent);

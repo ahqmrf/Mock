@@ -14,6 +14,8 @@ public final class Const {
     public final class Route {
         public static final String USER_REF     = "user";
         public static final String LOCATION_REF = "location";
+        public static final String FRIEND       = "friend";
+        public static final String REQUEST      = "request";
     }
 
     public final class Keys {
@@ -27,6 +29,12 @@ public final class Const {
         public static final String LOGGED_IN       = "isLoggedIn";
         public static final String PROFILE_PIC     = "imageUrl";
         public static final String SERVICE_STARTED = "locationService";
+        public static final String FRIEND          = "friend";
+        public static final String STRANGER        = "stranger";
+        public static final String REQUESTED       = "requested";
+        public static final String WANNABE         = "wannabe";
+        public static final String USER_TYPE       = "userType";
+        public static final String STATUS          = "status";
     }
 
     public static final String PREF_NAME = "mock.pref";

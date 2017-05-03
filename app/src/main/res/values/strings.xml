@@ -35,4 +35,12 @@
     <string name="label_change_pass">Change password</string>
     <string name="button_add_as_friend">+ Add as friend</string>
     <string name="button_send_a_message">Send message</string>
+    <string name="menu_track_on_map">Track on map</string>
+    <string name="menu_unfriend">Unfriend</string>
+    <string name="menu_send_message">Send message</string>
+    <string name="menu_add_as_friend">Add as friend</string>
+    <string name="menu_cancel_request">Cancel request</string>
+    <string name="menu_confirm_friend">Confirm friend</string>
+    <string name="button_confirm">Confirm</string>
+    <string name="button_decline">Decline</string>
 </resources>

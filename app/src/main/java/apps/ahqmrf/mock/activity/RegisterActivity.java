@@ -316,9 +316,8 @@ public class RegisterActivity extends AppCompatActivity implements View.OnFocusC
     }
 
     private void openImageGallery() {
-        Intent intent = new Intent();
+        Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         intent.setType("image/*");
-        intent.setAction(Intent.ACTION_PICK);
         if (getPackageManager().resolveActivity(intent, 0) != null) {
             startActivityForResult(Intent.createChooser(intent, "Select Picture"), Const.RequestCodes.REQUEST_BROWSE_GALLERY);
         }

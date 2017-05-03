@@ -39,8 +39,7 @@
         <activity
             android:name=".activity.SettingsActivity"
             android:launchMode="singleTask"/>
-        <activity android:name=".activity.UserActivity"
-            android:launchMode="singleTop"/>
+        <activity android:name=".activity.UserActivity"/>
 
         <service
             android:name=".service.LocationUpdateService"

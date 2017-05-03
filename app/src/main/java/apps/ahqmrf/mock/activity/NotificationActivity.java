@@ -114,8 +114,8 @@ public class NotificationActivity extends BaseActivity implements NotificationLi
 
     @Override
     public void onConfirmClick(User user) {
-        setValues(database.getReference(Const.Route.FRIEND).child(self.getUsername()).child(user.getUsername()), self, Const.Keys.FRIEND);
-        setValues(database.getReference(Const.Route.FRIEND).child(user.getUsername()).child(self.getUsername()), user, Const.Keys.FRIEND);
+        setValues(database.getReference(Const.Route.FRIEND).child(self.getUsername()).child(user.getUsername()), user, Const.Keys.FRIEND);
+        setValues(database.getReference(Const.Route.FRIEND).child(user.getUsername()).child(self.getUsername()), self, Const.Keys.FRIEND);
         database.getReference(Const.Route.REQUEST).child(self.getUsername()).child(user.getUsername()).removeValue();
         updateNotificationIcon();
         size--;

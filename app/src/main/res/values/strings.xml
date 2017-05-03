@@ -44,4 +44,5 @@
     <string name="button_confirm">Confirm</string>
     <string name="button_decline">Decline</string>
     <string name="label_no_new_notifications">No new notifications.</string>
+    <string name="label_no_friend">You have not added any friend yet</string>
 </resources>

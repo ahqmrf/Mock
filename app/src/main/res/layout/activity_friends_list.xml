@@ -16,6 +16,20 @@
         android:layout_below="@id/app_toolbar"
         android:orientation="vertical">
 
+        <TextView
+            android:id="@+id/text_no_friends"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="24dp"
+            android:textSize="24sp"
+            android:gravity="center"
+            android:visibility="gone"
+            android:text="@string/label_no_friend"/>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recycler_friends"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
 
     </LinearLayout>
 

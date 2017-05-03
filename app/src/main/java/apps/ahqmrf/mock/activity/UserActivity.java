@@ -115,8 +115,8 @@ public class UserActivity extends BaseActivity {
     }
 
     public void acceptRequest(MenuItem item) {
-        setValues(database.getReference(Const.Route.FRIEND).child(self.getUsername()).child(thisUserName), self, Const.Keys.FRIEND);
-        setValues(database.getReference(Const.Route.FRIEND).child(thisUserName).child(self.getUsername()), user, Const.Keys.FRIEND);
+        setValues(database.getReference(Const.Route.FRIEND).child(self.getUsername()).child(thisUserName), user, Const.Keys.FRIEND);
+        setValues(database.getReference(Const.Route.FRIEND).child(thisUserName).child(self.getUsername()), self, Const.Keys.FRIEND);
         database.getReference(Const.Route.REQUEST).child(self.getUsername()).child(thisUserName).removeValue();
         popupMenu = new PopupMenu(this, more);
         popupMenu.inflate(R.menu.friend_menu);

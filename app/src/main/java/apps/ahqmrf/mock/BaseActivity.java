@@ -304,12 +304,14 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
                                 intent.putExtra(Const.Keys.USER_TYPE, Const.Keys.FRIEND);
                             else if (val.equals(Const.Keys.REQUESTED)) intent.putExtra(Const.Keys.USER_TYPE, Const.Keys.REQUESTED);
                             else intent.putExtra(Const.Keys.USER_TYPE, Const.Keys.WANNABE);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                             startActivity(intent);
                             overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
                             item.collapseActionView();
                         }
                         else {
                             intent.putExtra(Const.Keys.USER_TYPE, Const.Keys.STRANGER);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                             startActivity(intent);
                             overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
                             item.collapseActionView();
@@ -320,6 +322,7 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
                     public void onCancelled(DatabaseError databaseError) {
                         progressList.setVisibility(View.GONE);
                         intent.putExtra(Const.Keys.USER_TYPE, Const.Keys.STRANGER);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(intent);
                         overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
                         item.collapseActionView();
@@ -331,6 +334,7 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
 
         Intent intent = new Intent(this, UserActivity.class);
         intent.putExtra(Const.Keys.USER, user);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
         overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
         item.collapseActionView();

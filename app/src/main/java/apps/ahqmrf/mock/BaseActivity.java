@@ -1,10 +1,15 @@
 package apps.ahqmrf.mock;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -120,6 +125,7 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
                     if(dataSnapshot.getChildrenCount() > 0) {
                         notificationIcon.setText("" + dataSnapshot.getChildrenCount());
                         notificationIcon.setVisibility(View.VISIBLE);
+                        createNotification();
                     } else {
                         notificationIcon.setVisibility(View.GONE);
                     }
@@ -135,6 +141,25 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
                 Utility.showToast(getApplicationContext(), "Failed to retrieve notification!");
             }
         };
+    }
+
+    protected void createNotification() {
+        Intent intent = new Intent(this, NotificationActivity.class);
+        intent.putExtra(Const.Keys.NOTIFICATION_ID, 121);
+        int requestID = (int) System.currentTimeMillis(); //unique requestID to differentiate between various notification with same NotifId
+        int flags = PendingIntent.FLAG_CANCEL_CURRENT; // cancel old intent and create new one
+        PendingIntent pIntent = PendingIntent.getActivity(this, requestID, intent, flags);
+        Notification mBuilder =
+                new NotificationCompat.Builder(this)
+                        .setSmallIcon(R.mipmap.ic_launcher)
+                        .setContentTitle("Mock")
+                        .setContentText("You have new notifications")
+                        .setContentIntent(pIntent)
+                        .setAutoCancel(true)
+                        .build();
+        NotificationManager mNotificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotificationManager.notify(121, mBuilder);
     }
 
     protected void getAllUsers(final String searchKey) {

@@ -35,6 +35,7 @@ public final class Const {
         public static final String WANNABE         = "wannabe";
         public static final String USER_TYPE       = "userType";
         public static final String STATUS          = "status";
+        public static final String NOTIFICATION_ID = "notificationID";
     }
 
     public static final String PREF_NAME = "mock.pref";

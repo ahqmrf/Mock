@@ -1,5 +1,6 @@
 package apps.ahqmrf.mock.activity;
 
+import android.app.NotificationManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
@@ -49,6 +50,9 @@ public class NotificationActivity extends BaseActivity implements NotificationLi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notification);
         ButterKnife.bind(this);
+        NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        int id = getIntent().getIntExtra(Const.Keys.NOTIFICATION_ID, 0);
+        if(id > 0) manager.cancel(id);
         mImageNotification.setColorFilter(ContextCompat.getColor(this, R.color.black));
         self = new User(
                 Utility.getString(this, Const.Keys.EMAIL),

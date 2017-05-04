@@ -12,6 +12,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -37,6 +38,22 @@ public class TrackerActivity extends BaseActivity implements OnMapReadyCallback 
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private String thisUserName;
     private String thisUserFullName;
+    private DatabaseReference location;
+    private ValueEventListener eventListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(DataSnapshot dataSnapshot) {
+            if(dataSnapshot != null) {
+                double lat = (double)dataSnapshot.child(Const.Keys.LATITUDE).getValue();
+                double lng = (double)dataSnapshot.child(Const.Keys.LONGITUDE).getValue();
+                updateMarker(new LatLng(lat, lng));
+            }
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +63,7 @@ public class TrackerActivity extends BaseActivity implements OnMapReadyCallback 
         User user = getIntent().getParcelableExtra(Const.Keys.USER);
         thisUserName = user.getUsername();
         thisUserFullName = user.getFullName();
+        location = database.getReference(Const.Route.LOCATION_REF).child(thisUserName);
         setToolbarWithBackArrow();
     }
 
@@ -58,29 +76,18 @@ public class TrackerActivity extends BaseActivity implements OnMapReadyCallback 
     protected void onViewCreated() {
         SupportMapFragment mapFrag = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFrag.getMapAsync(this);
-        DatabaseReference location = database.getReference(Const.Route.LOCATION_REF);
-        location.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Map<String, Object> value = (Map<String, Object>) dataSnapshot.getValue();
-                for (Map.Entry<String, Object> entry : value.entrySet()) {
+    }
 
-                    //Get user map
-                    Map singleUser = (Map) entry.getValue();
-                    if (singleUser.get(Const.Keys.USERNAME).equals(thisUserName)) {
-                        LatLng latLng = new LatLng((double) singleUser.get(Const.Keys.LATITUDE), (double) singleUser.get(Const.Keys.LONGITUDE));
-                        updateMarker(latLng);
-                        break;
-                    }
-                }
-            }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        location.addValueEventListener(eventListener);
+    }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
+    @Override
+    protected void onPause() {
+        super.onPause();
+        location.removeEventListener(eventListener);
     }
 
     private void updateMarker(LatLng latLng) {

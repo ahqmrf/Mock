@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
@@ -31,6 +32,7 @@ public class FriendsListActivity extends BaseActivity {
     String title;
     private ArrayList<User> mItems;
     private LinearLayoutManager mLayoutManager;
+    private DatabaseReference ref;
 
     @BindView(R.id.recycler_friends) RecyclerView recyclerView;
     @BindView(R.id.text_no_friends)
@@ -55,17 +57,20 @@ public class FriendsListActivity extends BaseActivity {
     protected void onViewCreated() {
         String username = Utility.getString(this, Const.Keys.USERNAME);
         progressList.setVisibility(View.VISIBLE);
-        FirebaseDatabase.getInstance().getReference(Const.Route.FRIEND).child(username).addValueEventListener(new ValueEventListener() {
+        ref = FirebaseDatabase.getInstance().getReference(Const.Route.FRIEND).child(username);
+        ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 progressList.setVisibility(View.GONE);
                 prepareFriendList((Map<String, Object>) dataSnapshot.getValue());
+                ref.removeEventListener(this);
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 System.out.println("The read failed: " + databaseError.getCode());
                 progressList.setVisibility(View.GONE);
+                ref.removeEventListener(this);
             }
         });
     }

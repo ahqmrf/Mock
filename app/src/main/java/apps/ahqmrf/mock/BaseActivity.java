@@ -21,6 +21,7 @@ import android.widget.TextView;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
@@ -101,25 +102,55 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
     protected UserListAdapter mAdapter;
     protected MenuItem        item;
     protected boolean         wasSearchClicked;
+    protected DatabaseReference tempRef;
+    protected ValueEventListener notificationListener;
+    protected DatabaseReference refNotification;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+        String username = Utility.getString(this, Const.Keys.USERNAME);
+        refNotification = FirebaseDatabase.getInstance().getReference(Const.Route.REQUEST).child(username);
+        notificationListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot != null) {
+                    if(dataSnapshot.getChildrenCount() > 0) {
+                        notificationIcon.setText("" + dataSnapshot.getChildrenCount());
+                        notificationIcon.setVisibility(View.VISIBLE);
+                    } else {
+                        notificationIcon.setVisibility(View.GONE);
+                    }
+                }
+                else {
+                    notificationIcon.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                notificationIcon.setVisibility(View.GONE);
+                Utility.showToast(getApplicationContext(), "Failed to retrieve notification!");
+            }
+        };
     }
 
     protected void getAllUsers(final String searchKey) {
-        FirebaseDatabase.getInstance().getReference(Const.Route.USER_REF).addValueEventListener(new ValueEventListener() {
+        tempRef = FirebaseDatabase.getInstance().getReference(Const.Route.USER_REF);
+        tempRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 prepareUserList((Map<String, Object>) dataSnapshot.getValue(), searchKey);
+                tempRef.removeEventListener(this);
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 System.out.println("The read failed: " + databaseError.getCode());
                 progressList.setVisibility(View.GONE);
+                tempRef.removeEventListener(this);
             }
         });
     }
@@ -186,34 +217,9 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
         recyclerView.setAdapter(mAdapter);
         wasSearchClicked = false;
         userList = new ArrayList<>();
-        updateNotificationIcon();
         onViewCreated();
     }
 
-    protected void updateNotificationIcon() {
-        String username = Utility.getString(this, Const.Keys.USERNAME);
-        progressList.setVisibility(View.VISIBLE);
-        FirebaseDatabase.getInstance().getReference(Const.Route.REQUEST).child(username).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                progressList.setVisibility(View.GONE);
-                if (dataSnapshot.getChildrenCount() > 0) {
-                    notificationIcon.setText("" + dataSnapshot.getChildrenCount());
-                    notificationIcon.setVisibility(View.VISIBLE);
-                }
-                else {
-                    notificationIcon.setVisibility(View.GONE);
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                progressList.setVisibility(View.GONE);
-                notificationIcon.setVisibility(View.GONE);
-                Utility.showToast(getApplicationContext(), "Failed to retrieve notification!");
-            }
-        });
-    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -245,7 +251,12 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
     @Override
     protected void onResume() {
         super.onResume();
-        updateNotificationIcon();
+        refNotification.addValueEventListener(notificationListener);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
     }
 
     @Override
@@ -294,7 +305,8 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
                 final Intent intent = new Intent(this, UserActivity.class);
                 intent.putExtra(Const.Keys.USER, user);
                 progressList.setVisibility(View.VISIBLE);
-                FirebaseDatabase.getInstance().getReference(Const.Route.FRIEND).child(username).addListenerForSingleValueEvent(new ValueEventListener() {
+                tempRef = FirebaseDatabase.getInstance().getReference(Const.Route.FRIEND).child(username);
+                tempRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         progressList.setVisibility(View.GONE);
@@ -316,6 +328,7 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
                             overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
                             item.collapseActionView();
                         }
+                        tempRef.removeEventListener(this);
                     }
 
                     @Override
@@ -326,6 +339,7 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
                         startActivity(intent);
                         overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
                         item.collapseActionView();
+                        tempRef.removeEventListener(this);
                     }
                 });
             }

@@ -21,6 +21,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
@@ -49,6 +50,7 @@ public class SignInActivity extends AppCompatActivity {
     @BindString(R.string.error_signin)  String errorSigningIn;
     private String email;
     private String password;
+    private DatabaseReference ref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -153,15 +155,18 @@ public class SignInActivity extends AppCompatActivity {
     }
 
     private void findUser() {
-        FirebaseDatabase.getInstance().getReference(Const.Route.USER_REF).addValueEventListener(new ValueEventListener() {
+        ref = FirebaseDatabase.getInstance().getReference(Const.Route.USER_REF);
+        ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 findUser((Map<String,Object>) dataSnapshot.getValue());
+                ref.removeEventListener(this);
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 System.out.println("The read failed: " + databaseError.getCode());
+                ref.removeEventListener(this);
             }
         });
     }

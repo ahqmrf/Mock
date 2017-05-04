@@ -72,11 +72,11 @@ public class RegisterActivity extends AppCompatActivity implements View.OnFocusC
     private String  username;
     private String  email;
     private String  password;
-    private String filePath;
+    private String  filePath;
     private boolean allValid;
-    private Uri uri;
-    private DatabaseReference refUser = FirebaseDatabase.getInstance().getReference(Const.Route.USER_REF);
-    private StorageReference mStorage = FirebaseStorage.getInstance().getReference();
+    private Uri     uri;
+    private DatabaseReference refUser  = FirebaseDatabase.getInstance().getReference(Const.Route.USER_REF);
+    private StorageReference  mStorage = FirebaseStorage.getInstance().getReference();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -180,12 +180,14 @@ public class RegisterActivity extends AppCompatActivity implements View.OnFocusC
                         usernameError.setVisibility(View.VISIBLE);
                     }
                     doTheRest();
+                    refUser.removeEventListener(this);
                 }
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
                     progressLayout.setVisibility(View.GONE);
                     doTheRest();
+                    refUser.removeEventListener(this);
                 }
             });
         } else {
@@ -236,9 +238,9 @@ public class RegisterActivity extends AppCompatActivity implements View.OnFocusC
             allValid = false;
         }
 
-        if(!TextUtils.isEmpty(filePath)) {
+        if (!TextUtils.isEmpty(filePath)) {
             File file = new File(filePath);
-            if(!file.exists()) {
+            if (!file.exists()) {
                 pathError.setVisibility(View.VISIBLE);
                 allValid = false;
             }
@@ -266,7 +268,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnFocusC
         database.child(Const.Keys.NAME).setValue(fullName);
         database.child(Const.Keys.USERNAME).setValue(username);
         database.child(Const.Keys.EMAIL).setValue(email);
-        if(TextUtils.isEmpty(imageUrl)) imageUrl = "";
+        if (TextUtils.isEmpty(imageUrl)) imageUrl = "";
         database.child(Const.Keys.PROFILE_PIC).setValue(imageUrl);
         Utility.showToast(this, successRegister);
         Utility.put(this, Const.Keys.NAME, fullName);
@@ -351,14 +353,14 @@ public class RegisterActivity extends AppCompatActivity implements View.OnFocusC
     }
 
     private void uploadImage() {
-        if(TextUtils.isEmpty(filePath)) {
+        if (TextUtils.isEmpty(filePath)) {
             progressLayout.setVisibility(View.VISIBLE);
             register("");
             return;
         }
         File file = new File(filePath);
         double length = file.length() / 1024;
-        if(length > 500) {
+        if (length > 500) {
             Utility.showToast(this, "File size must be less than 500 kB");
             return;
         }

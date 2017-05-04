@@ -120,7 +120,6 @@ public class UserActivity extends BaseActivity {
         database.getReference(Const.Route.REQUEST).child(self.getUsername()).child(thisUserName).removeValue();
         popupMenu = new PopupMenu(this, more);
         popupMenu.inflate(R.menu.friend_menu);
-        updateNotificationIcon();
     }
 
     private void setValues(DatabaseReference reference, User user, String status) {

@@ -40,6 +40,7 @@ public class NotificationActivity extends BaseActivity implements NotificationLi
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private User self;
     private int size = 0;
+    private DatabaseReference ref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,17 +66,20 @@ public class NotificationActivity extends BaseActivity implements NotificationLi
     protected void onViewCreated() {
         String username = Utility.getString(this, Const.Keys.USERNAME);
         progressList.setVisibility(View.VISIBLE);
-        FirebaseDatabase.getInstance().getReference(Const.Route.REQUEST).child(username).addValueEventListener(new ValueEventListener() {
+        ref = FirebaseDatabase.getInstance().getReference(Const.Route.REQUEST).child(username);
+        ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 progressList.setVisibility(View.GONE);
                 prepareRequestList((Map<String, Object>) dataSnapshot.getValue());
+                ref.removeEventListener(this);
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 System.out.println("The read failed: " + databaseError.getCode());
                 progressList.setVisibility(View.GONE);
+                ref.removeEventListener(this);
             }
         });
     }
@@ -117,7 +121,6 @@ public class NotificationActivity extends BaseActivity implements NotificationLi
         setValues(database.getReference(Const.Route.FRIEND).child(self.getUsername()).child(user.getUsername()), user, Const.Keys.FRIEND);
         setValues(database.getReference(Const.Route.FRIEND).child(user.getUsername()).child(self.getUsername()), self, Const.Keys.FRIEND);
         database.getReference(Const.Route.REQUEST).child(self.getUsername()).child(user.getUsername()).removeValue();
-        updateNotificationIcon();
         size--;
         if(size == 0) noNotification.setVisibility(View.VISIBLE);
     }

@@ -72,6 +72,12 @@ public class NotificationListAdapter extends RecyclerView.Adapter<RecyclerView.V
         return mItems == null ? 0 : mItems.size();
     }
 
+    public void setFilter(ArrayList<Object> newItems) {
+        mItems.clear();
+        mItems.addAll(newItems);
+        notifyDataSetChanged();
+    }
+
     @Override
     public int getItemViewType(int position) {
         Object object = mItems.get(position);

@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -40,7 +41,8 @@ public class NotificationActivity extends BaseActivity implements NotificationLi
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private User self;
     private int size = 0;
-    private DatabaseReference ref;
+    private DatabaseReference  ref;
+    private ValueEventListener eventListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +56,29 @@ public class NotificationActivity extends BaseActivity implements NotificationLi
                 Utility.getString(this, Const.Keys.NAME),
                 Utility.getString(this, Const.Keys.PROFILE_PIC)
         );
+        noNotification.setVisibility(View.VISIBLE);
         setToolbarWithBackArrow();
+        String username = Utility.getString(this, Const.Keys.USERNAME);
+        ref = FirebaseDatabase.getInstance().getReference(Const.Route.REQUEST).child(username);
+        eventListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                progressList.setVisibility(View.VISIBLE);
+                prepareRequestList((Map<String, Object>) dataSnapshot.getValue());
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                System.out.println("The read failed: " + databaseError.getCode());
+                progressList.setVisibility(View.GONE);
+
+            }
+        };
+        mLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        recyclerView.setLayoutManager(mLayoutManager);
+        mItems = new ArrayList<>();
+        mAdapter = new NotificationListAdapter(this, this, mItems);
+        recyclerView.setAdapter(mAdapter);
     }
 
     @Override
@@ -64,29 +88,25 @@ public class NotificationActivity extends BaseActivity implements NotificationLi
 
     @Override
     protected void onViewCreated() {
-        String username = Utility.getString(this, Const.Keys.USERNAME);
-        progressList.setVisibility(View.VISIBLE);
-        ref = FirebaseDatabase.getInstance().getReference(Const.Route.REQUEST).child(username);
-        ref.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                progressList.setVisibility(View.GONE);
-                prepareRequestList((Map<String, Object>) dataSnapshot.getValue());
-                ref.removeEventListener(this);
-            }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                System.out.println("The read failed: " + databaseError.getCode());
-                progressList.setVisibility(View.GONE);
-                ref.removeEventListener(this);
-            }
-        });
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        ref.removeEventListener(eventListener);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        ref.addValueEventListener(eventListener);
     }
 
     private void prepareRequestList(Map<String, Object> value) {
         if(value == null) {
             noNotification.setVisibility(View.VISIBLE);
+            progressList.setVisibility(View.GONE);
             return;
         }
         mItems = new ArrayList<>();
@@ -100,11 +120,10 @@ public class NotificationActivity extends BaseActivity implements NotificationLi
             mItems.add(new User(email, username, fullName, imageUrl));
         }
 
-        mLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
-        recyclerView.setLayoutManager(mLayoutManager);
-        mAdapter = new NotificationListAdapter(this, this, mItems);
-        recyclerView.setAdapter(mAdapter);
+        mAdapter.setFilter(mItems);
+        progressList.setVisibility(View.GONE);
         size = mItems.size();
+        if(size > 0) noNotification.setVisibility(View.GONE);
     }
 
     @Override

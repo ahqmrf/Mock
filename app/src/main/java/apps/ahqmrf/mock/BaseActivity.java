@@ -110,6 +110,7 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
     protected DatabaseReference tempRef;
     protected ValueEventListener notificationListener;
     protected DatabaseReference refNotification;
+    protected int totalNotifications = 0;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -117,21 +118,32 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         String username = Utility.getString(this, Const.Keys.USERNAME);
+        totalNotifications = Utility.getInteger(this, Const.Keys.NOTIFICATION_COUNT);
         refNotification = FirebaseDatabase.getInstance().getReference(Const.Route.REQUEST).child(username);
         notificationListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot != null) {
                     if(dataSnapshot.getChildrenCount() > 0) {
-                        notificationIcon.setText("" + dataSnapshot.getChildrenCount());
+                        int count = (int)dataSnapshot.getChildrenCount();
+                        totalNotifications = Utility.getInteger(getApplicationContext(), Const.Keys.NOTIFICATION_COUNT);
+                        notificationIcon.setText("" + count);
                         notificationIcon.setVisibility(View.VISIBLE);
-                        createNotification();
+                        if(totalNotifications < count) {
+                            totalNotifications = count;
+                            Utility.put(getApplicationContext(), Const.Keys.NOTIFICATION_COUNT, totalNotifications);
+                            createNotification();
+                        }
                     } else {
                         notificationIcon.setVisibility(View.GONE);
+                        totalNotifications = 0;
+                        Utility.put(getApplicationContext(), Const.Keys.NOTIFICATION_COUNT, totalNotifications);
                     }
                 }
                 else {
                     notificationIcon.setVisibility(View.GONE);
+                    totalNotifications = 0;
+                    Utility.put(getApplicationContext(), Const.Keys.NOTIFICATION_COUNT, totalNotifications);
                 }
             }
 
@@ -145,7 +157,6 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
 
     protected void createNotification() {
         Intent intent = new Intent(this, NotificationActivity.class);
-        intent.putExtra(Const.Keys.NOTIFICATION_ID, 121);
         int requestID = (int) System.currentTimeMillis(); //unique requestID to differentiate between various notification with same NotifId
         int flags = PendingIntent.FLAG_CANCEL_CURRENT; // cancel old intent and create new one
         PendingIntent pIntent = PendingIntent.getActivity(this, requestID, intent, flags);
@@ -159,7 +170,7 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
                         .build();
         NotificationManager mNotificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        mNotificationManager.notify(121, mBuilder);
+        mNotificationManager.notify(0, mBuilder);
     }
 
     protected void getAllUsers(final String searchKey) {

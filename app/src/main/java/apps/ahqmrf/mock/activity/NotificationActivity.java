@@ -50,9 +50,7 @@ public class NotificationActivity extends BaseActivity implements NotificationLi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notification);
         ButterKnife.bind(this);
-        NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        int id = getIntent().getIntExtra(Const.Keys.NOTIFICATION_ID, 0);
-        if(id > 0) manager.cancel(id);
+        Utility.put(getApplicationContext(), Const.Keys.NOTIFICATION_COUNT, 0);
         mImageNotification.setColorFilter(ContextCompat.getColor(this, R.color.black));
         self = new User(
                 Utility.getString(this, Const.Keys.EMAIL),

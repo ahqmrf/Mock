@@ -50,6 +50,11 @@ public class Utility {
         return pref.getString(key, null);
     }
 
+    public static int getInteger(Context context, String key) {
+        SharedPreferences pref = context.getSharedPreferences(Const.PREF_NAME, Context.MODE_PRIVATE);
+        return pref.getInt(key, 0);
+    }
+
     public static boolean getBoolean(Context context, String key) {
         SharedPreferences pref = context.getSharedPreferences(Const.PREF_NAME, Context.MODE_PRIVATE);
         return pref.getBoolean(key, false);

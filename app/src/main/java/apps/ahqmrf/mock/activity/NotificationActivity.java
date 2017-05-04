@@ -110,6 +110,7 @@ public class NotificationActivity extends BaseActivity implements NotificationLi
         for (Map.Entry<String, Object> entry : value.entrySet()) {
             //Get user map
             Map singleUser = (Map) entry.getValue();
+            if(singleUser.size() < 5) continue;
             String email = (String) singleUser.get(Const.Keys.EMAIL);
             String username = (String) singleUser.get(Const.Keys.USERNAME);
             String fullName = (String) singleUser.get(Const.Keys.NAME);

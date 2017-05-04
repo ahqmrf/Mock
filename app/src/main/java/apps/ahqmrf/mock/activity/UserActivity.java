@@ -2,7 +2,6 @@ package apps.ahqmrf.mock.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v7.widget.PopupMenu;
 import android.text.TextUtils;
 import android.view.MenuItem;
@@ -101,13 +100,13 @@ public class UserActivity extends BaseActivity {
     public void cancelRequest(MenuItem item) {
         database.getReference(Const.Route.FRIEND).child(self.getUsername()).child(thisUserName).removeValue();
         database.getReference(Const.Route.FRIEND).child(thisUserName).child(self.getUsername()).removeValue();
-        database.getReference(Const.Route.REQUEST).child(thisUserName).child(self.getUsername()).removeValue();
+        database.getReference(Const.Route.NOTIFICATION).child(thisUserName).child(self.getUsername()).removeValue();
         popupMenu = new PopupMenu(this, more);
         popupMenu.inflate(R.menu.stranger_menu);
     }
 
     public void sendFriendRequest(MenuItem item) {
-        setValues(database.getReference(Const.Route.REQUEST).child(thisUserName).child(self.getUsername()), self, Const.Keys.REQUESTED);
+        setValues(database.getReference(Const.Route.NOTIFICATION).child(thisUserName).child(self.getUsername()), self, Const.Keys.REQUESTED);
         setValues(database.getReference(Const.Route.FRIEND).child(thisUserName).child(self.getUsername()), self, Const.Keys.WANNABE);
         setValues(database.getReference(Const.Route.FRIEND).child(self.getUsername()).child(thisUserName), user, Const.Keys.REQUESTED);
         popupMenu = new PopupMenu(this, more);
@@ -117,7 +116,8 @@ public class UserActivity extends BaseActivity {
     public void acceptRequest(MenuItem item) {
         setValues(database.getReference(Const.Route.FRIEND).child(self.getUsername()).child(thisUserName), user, Const.Keys.FRIEND);
         setValues(database.getReference(Const.Route.FRIEND).child(thisUserName).child(self.getUsername()), self, Const.Keys.FRIEND);
-        database.getReference(Const.Route.REQUEST).child(self.getUsername()).child(thisUserName).removeValue();
+        database.getReference(Const.Route.NOTIFICATION).child(self.getUsername()).child(thisUserName).removeValue();
+        setValues( database.getReference(Const.Route.NOTIFICATION).child(thisUserName).child(self.getUsername()), self, Const.Keys.ACCEPTED);
         popupMenu = new PopupMenu(this, more);
         popupMenu.inflate(R.menu.friend_menu);
     }

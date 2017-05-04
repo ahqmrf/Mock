@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import apps.ahqmrf.mock.BaseActivity;
+import apps.ahqmrf.mock.Confirmation;
 import apps.ahqmrf.mock.R;
 import apps.ahqmrf.mock.User;
 import apps.ahqmrf.mock.adapter.NotificationListAdapter;
@@ -55,7 +56,7 @@ public class NotificationActivity extends BaseActivity implements NotificationLi
         noNotification.setVisibility(View.VISIBLE);
         setToolbarWithBackArrow();
         String username = Utility.getString(this, Const.Keys.USERNAME);
-        ref = FirebaseDatabase.getInstance().getReference(Const.Route.REQUEST).child(username);
+        ref = FirebaseDatabase.getInstance().getReference(Const.Route.NOTIFICATION).child(username);
         eventListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -113,7 +114,9 @@ public class NotificationActivity extends BaseActivity implements NotificationLi
             String username = (String) singleUser.get(Const.Keys.USERNAME);
             String fullName = (String) singleUser.get(Const.Keys.NAME);
             String imageUrl = (String) singleUser.get(Const.Keys.PROFILE_PIC);
-            mItems.add(new User(email, username, fullName, imageUrl));
+            String status = (String) singleUser.get(Const.Keys.STATUS);
+            if(status.equals(Const.Keys.ACCEPTED)) mItems.add(0, new Confirmation(email, username, fullName, imageUrl));
+            else mItems.add(new User(email, username, fullName, imageUrl));
         }
 
         mAdapter.setFilter(mItems);
@@ -134,8 +137,9 @@ public class NotificationActivity extends BaseActivity implements NotificationLi
     @Override
     public void onConfirmClick(User user) {
         setValues(database.getReference(Const.Route.FRIEND).child(self.getUsername()).child(user.getUsername()), user, Const.Keys.FRIEND);
+        setValues(database.getReference(Const.Route.NOTIFICATION).child(user.getUsername()).child(self.getUsername()), self, Const.Keys.ACCEPTED);
         setValues(database.getReference(Const.Route.FRIEND).child(user.getUsername()).child(self.getUsername()), self, Const.Keys.FRIEND);
-        database.getReference(Const.Route.REQUEST).child(self.getUsername()).child(user.getUsername()).removeValue();
+        database.getReference(Const.Route.NOTIFICATION).child(self.getUsername()).child(user.getUsername()).removeValue();
         size--;
         if(size == 0) noNotification.setVisibility(View.VISIBLE);
     }
@@ -144,7 +148,14 @@ public class NotificationActivity extends BaseActivity implements NotificationLi
     public void onDeclineClick(User user) {
         database.getReference(Const.Route.FRIEND).child(self.getUsername()).child(user.getUsername()).removeValue();
         database.getReference(Const.Route.FRIEND).child(user.getUsername()).child(self.getUsername()).removeValue();
-        database.getReference(Const.Route.REQUEST).child(self.getUsername()).child(user.getUsername()).removeValue();
+        database.getReference(Const.Route.NOTIFICATION).child(self.getUsername()).child(user.getUsername()).removeValue();
+        size--;
+        if(size == 0) noNotification.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onDeleteClick(Confirmation confirmation) {
+        database.getReference(Const.Route.NOTIFICATION).child(self.getUsername()).child(confirmation.getUsername()).removeValue();
         size--;
         if(size == 0) noNotification.setVisibility(View.VISIBLE);
     }

@@ -5,12 +5,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import apps.ahqmrf.mock.Confirmation;
 import apps.ahqmrf.mock.R;
 import apps.ahqmrf.mock.User;
 import apps.ahqmrf.mock.util.Utility;
@@ -33,6 +33,8 @@ public class NotificationListAdapter extends RecyclerView.Adapter<RecyclerView.V
         void onConfirmClick(User user);
 
         void onDeclineClick(User user);
+
+        void onDeleteClick(Confirmation confirmation);
     }
 
     private Context           mContext;
@@ -53,7 +55,7 @@ public class NotificationListAdapter extends RecyclerView.Adapter<RecyclerView.V
             return new RequestViewHolder(view);
         }
         view = LayoutInflater.from(mContext).inflate(R.layout.list_item_notification, parent, false);
-        return new NotificationViewHolder(view);
+        return new ConfirmationViewHolder(view);
     }
 
     @Override
@@ -62,8 +64,14 @@ public class NotificationListAdapter extends RecyclerView.Adapter<RecyclerView.V
         if (viewType == REQUEST) {
             RequestViewHolder holder = (RequestViewHolder) rHolder;
             User user = (User) mItems.get(position);
-            holder.fullName.setText(user.getFullName());
+            String text = user.getFullName() + " wants to be your friend.";
+            holder.fullName.setText(text);
             Utility.loadImage(user.getImageUrl(), holder.imageView, holder.progressLayout);
+        } else {
+            ConfirmationViewHolder holder = (ConfirmationViewHolder) rHolder;
+            Confirmation con = (Confirmation) mItems.get(position);
+            String text = con.getFullName() + " accepted your friend request.";
+            holder.textView.setText(text);
         }
     }
 
@@ -122,9 +130,22 @@ public class NotificationListAdapter extends RecyclerView.Adapter<RecyclerView.V
         }
     }
 
-    private class NotificationViewHolder extends RecyclerView.ViewHolder {
-        NotificationViewHolder(View view) {
+    public class ConfirmationViewHolder extends RecyclerView.ViewHolder {
+        @BindView(R.id.text_text) TextView  textView;
+
+        ConfirmationViewHolder(View view) {
             super(view);
+            ButterKnife.bind(this, view);
+        }
+
+        @OnClick(R.id.image_delete)
+        void removeConfirmation() {
+            if(mCallback != null) {
+                int position = getAdapterPosition();
+                mCallback.onDeleteClick((Confirmation) mItems.get(position));
+                mItems.remove(position);
+                notifyItemRemoved(position);
+            }
         }
     }
 }

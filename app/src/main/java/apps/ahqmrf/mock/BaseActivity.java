@@ -119,7 +119,7 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         String username = Utility.getString(this, Const.Keys.USERNAME);
         totalNotifications = Utility.getInteger(this, Const.Keys.NOTIFICATION_COUNT);
-        refNotification = FirebaseDatabase.getInstance().getReference(Const.Route.REQUEST).child(username);
+        refNotification = FirebaseDatabase.getInstance().getReference(Const.Route.NOTIFICATION).child(username);
         notificationListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -129,9 +129,9 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
                         totalNotifications = Utility.getInteger(getApplicationContext(), Const.Keys.NOTIFICATION_COUNT);
                         notificationIcon.setText("" + count);
                         notificationIcon.setVisibility(View.VISIBLE);
+                        Utility.putInt(getApplicationContext(), Const.Keys.NOTIFICATION_COUNT, count);
                         if(totalNotifications < count) {
                             totalNotifications = count;
-                            Utility.putInt(getApplicationContext(), Const.Keys.NOTIFICATION_COUNT, totalNotifications);
                             createNotification();
                         }
                     } else {

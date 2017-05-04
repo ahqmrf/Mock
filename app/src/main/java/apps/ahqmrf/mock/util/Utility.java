@@ -45,6 +45,13 @@ public class Utility {
         editor.apply();
     }
 
+    public static void putInt(Context context, String key, int value) {
+        SharedPreferences pref = context.getSharedPreferences(Const.PREF_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putInt(key, value);
+        editor.apply();
+    }
+
     public static String getString(Context context, String key) {
         SharedPreferences pref = context.getSharedPreferences(Const.PREF_NAME, Context.MODE_PRIVATE);
         return pref.getString(key, null);

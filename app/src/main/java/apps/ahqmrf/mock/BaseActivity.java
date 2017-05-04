@@ -131,19 +131,19 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
                         notificationIcon.setVisibility(View.VISIBLE);
                         if(totalNotifications < count) {
                             totalNotifications = count;
-                            Utility.put(getApplicationContext(), Const.Keys.NOTIFICATION_COUNT, totalNotifications);
+                            Utility.putInt(getApplicationContext(), Const.Keys.NOTIFICATION_COUNT, totalNotifications);
                             createNotification();
                         }
                     } else {
                         notificationIcon.setVisibility(View.GONE);
                         totalNotifications = 0;
-                        Utility.put(getApplicationContext(), Const.Keys.NOTIFICATION_COUNT, totalNotifications);
+                        Utility.putInt(getApplicationContext(), Const.Keys.NOTIFICATION_COUNT, totalNotifications);
                     }
                 }
                 else {
                     notificationIcon.setVisibility(View.GONE);
                     totalNotifications = 0;
-                    Utility.put(getApplicationContext(), Const.Keys.NOTIFICATION_COUNT, totalNotifications);
+                    Utility.putInt(getApplicationContext(), Const.Keys.NOTIFICATION_COUNT, totalNotifications);
                 }
             }
 

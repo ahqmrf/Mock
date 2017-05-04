@@ -1,17 +1,13 @@
 package apps.ahqmrf.mock.activity;
 
-import android.app.NotificationManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -37,7 +33,6 @@ public class NotificationActivity extends BaseActivity implements NotificationLi
     TextView noNotification;
 
     private NotificationListAdapter mAdapter;
-    private LinearLayoutManager     mLayoutManager;
     private ArrayList<Object>       mItems;
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private User self;
@@ -50,7 +45,6 @@ public class NotificationActivity extends BaseActivity implements NotificationLi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notification);
         ButterKnife.bind(this);
-        Utility.put(getApplicationContext(), Const.Keys.NOTIFICATION_COUNT, 0);
         mImageNotification.setColorFilter(ContextCompat.getColor(this, R.color.black));
         self = new User(
                 Utility.getString(this, Const.Keys.EMAIL),
@@ -76,7 +70,7 @@ public class NotificationActivity extends BaseActivity implements NotificationLi
 
             }
         };
-        mLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        LinearLayoutManager mLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(mLayoutManager);
         mItems = new ArrayList<>();
         mAdapter = new NotificationListAdapter(this, this, mItems);

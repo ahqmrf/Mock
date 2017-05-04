@@ -15,8 +15,13 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import apps.ahqmrf.mock.Time;
 
 /**
  * Created by bsse0 on 4/28/2017.
@@ -132,4 +137,28 @@ public class Utility {
                 imageView,
                 MyDisplayImageOptions.getInstance().getDisplayImageOptions());
     }
+
+    public static Time getCurrentTime() {
+        DateFormat dateFormat = new SimpleDateFormat(Const.DATE_FORMAT);
+        Date date = new Date();
+        String timeStr = dateFormat.format(date).toString();
+        String tokens[] = timeStr.split(" ");
+
+        return new Time(tokens[1], tokens[0]);
+    }
+
+    public static String get12HourTimeStamp(Time time) {
+        String tokens[] = time.getTimeStamp().split(":");
+        int hour = Integer.parseInt(tokens[0]);
+        int minute = Integer.parseInt(tokens[1]);
+
+        String AM_PM = "AM";
+        if(hour > 11) {
+            hour -= 12;
+            AM_PM = "PM";
+        }
+
+        return (hour < 10? "0" : "") + hour + ":" + (minute < 10? "0" : "") + minute + " " + AM_PM;
+    }
+
 }

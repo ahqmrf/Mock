@@ -5,6 +5,8 @@ package apps.ahqmrf.mock.util;
  */
 
 public final class Const {
+    public static final java.lang.String DATE_FORMAT = "yyyy/MM/dd HH:mm:ss";
+
     public final class RequestCodes {
         public static final int REQUEST_ACCESS_FINE_LOCATION = 1;
         public static final int REQUEST_BROWSE_GALLERY       = 2;
@@ -12,10 +14,12 @@ public final class Const {
     }
 
     public final class Route {
-        public static final String USER_REF     = "user";
-        public static final String LOCATION_REF = "location";
-        public static final String FRIEND       = "friend";
-        public static final String NOTIFICATION = "notifications";
+        public static final String USER_REF      = "user";
+        public static final String LOCATION_REF  = "location";
+        public static final String FRIEND        = "friend";
+        public static final String NOTIFICATION  = "notifications";
+        public static final String ONLINE_STATUS = "onlineStatus";
+        public static final String CHAT          = "chat";
     }
 
     public final class Keys {
@@ -37,6 +41,12 @@ public final class Const {
         public static final String STATUS             = "status";
         public static final String NOTIFICATION_COUNT = "countNotifications";
         public static final String ACCEPTED           = "accepted";
+        public static final String ONLINE             = "online";
+        public static final String OFFLINE            = "offline";
+        public static final String TYPING_STATUS      = "typing";
+        public static final String MESSAGES           = "messages";
+        public static final String TIME               = "time";
+        public static final String date               = "day";
     }
 
     public static final String PREF_NAME = "mock.pref";

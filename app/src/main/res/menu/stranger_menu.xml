@@ -6,5 +6,6 @@
         android:onClick="sendFriendRequest"/>
     <item
         android:id="@+id/menu_msg"
-        android:title="@string/menu_send_message"/>
+        android:title="@string/menu_send_message"
+        android:onClick="startChatting"/>
 </menu>

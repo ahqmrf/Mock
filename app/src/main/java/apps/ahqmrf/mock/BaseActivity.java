@@ -109,7 +109,7 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
     protected boolean         wasSearchClicked;
     protected DatabaseReference tempRef;
     protected ValueEventListener notificationListener;
-    protected DatabaseReference refNotification;
+    protected DatabaseReference refNotification, refOnlineStatus;
     protected int totalNotifications = 0;
 
     @Override
@@ -120,6 +120,7 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
         String username = Utility.getString(this, Const.Keys.USERNAME);
         totalNotifications = Utility.getInteger(this, Const.Keys.NOTIFICATION_COUNT);
         refNotification = FirebaseDatabase.getInstance().getReference(Const.Route.NOTIFICATION).child(username);
+        refOnlineStatus = FirebaseDatabase.getInstance().getReference(Const.Route.ONLINE_STATUS).child(username);
         notificationListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -288,11 +289,13 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
     protected void onResume() {
         super.onResume();
         refNotification.addValueEventListener(notificationListener);
+        refOnlineStatus.setValue(Const.Keys.ONLINE);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        refOnlineStatus.setValue(Const.Keys.OFFLINE);
     }
 
     @Override
@@ -333,7 +336,7 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
     public void onUserClick(final User user) {
         String username = Utility.getString(this, Const.Keys.USERNAME);
         if (!TextUtils.isEmpty(username)) {
-            if (username.toLowerCase().contains(user.getUsername())) {
+            if (username.equals(user.getUsername())) {
                 trigger(SettingsActivity.class);
                 item.collapseActionView();
             }

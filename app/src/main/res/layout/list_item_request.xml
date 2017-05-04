@@ -17,7 +17,7 @@
             android:layout_height="match_parent"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
-            android:background="?attr/selectableItemBackground"
+            style="@style/ClickableView"
             android:scaleType="centerCrop"
             tools:src="@drawable/pp"/>
 

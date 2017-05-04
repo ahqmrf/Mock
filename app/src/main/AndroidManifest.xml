@@ -49,6 +49,8 @@
         <activity
             android:name=".activity.NotificationActivity"
             android:launchMode="singleTask"/>
+        <activity android:name=".activity.ChatActivity">
+        </activity>
     </application>
 
 </manifest>

@@ -129,4 +129,10 @@ public class UserActivity extends BaseActivity {
         reference.child(Const.Keys.NAME).setValue(user.getFullName());
         reference.child(Const.Keys.PROFILE_PIC).setValue(user.getImageUrl());
     }
+
+    public void startChatting(MenuItem item) {
+        Intent intent = new Intent(this, ChatActivity.class);
+        intent.putExtra(Const.Keys.USER, user);
+        startActivity(intent);
+    }
 }

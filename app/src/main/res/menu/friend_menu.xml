@@ -6,7 +6,8 @@
         android:title="@string/menu_track_on_map"/>
     <item
         android:id="@+id/menu_msg"
-        android:title="@string/menu_send_message"/>
+        android:title="@string/menu_send_message"
+        android:onClick="startChatting"/>
     <item
         android:id="@+id/menu_unfriend"
         android:title="@string/menu_unfriend"

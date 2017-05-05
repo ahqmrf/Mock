@@ -49,7 +49,7 @@ public class ChatActivity extends AppCompatActivity {
     ImageView onlineStatus;
 
     @BindView(R.id.card_typing)
-    CardView typing;
+    ImageView typing;
 
     @BindView(R.id.recycler_chats)
     RecyclerView chatView;
@@ -146,10 +146,10 @@ public class ChatActivity extends AppCompatActivity {
                     if (dataSnapshot.getValue() != null) {
                         boolean isTyping = (boolean) dataSnapshot.getValue();
                         if (isTyping) typing.setVisibility(View.VISIBLE);
-                        else typing.setVisibility(View.GONE);
-                    } else typing.setVisibility(View.GONE);
+                        else typing.setVisibility(View.INVISIBLE);
+                    } else typing.setVisibility(View.INVISIBLE);
                 } else {
-                    typing.setVisibility(View.GONE);
+                    typing.setVisibility(View.INVISIBLE);
                 }
             }
 

@@ -22,6 +22,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import apps.ahqmrf.mock.Time;
+import apps.ahqmrf.mock.User;
 
 /**
  * Created by bsse0 on 4/28/2017.
@@ -161,4 +162,17 @@ public class Utility {
         return (hour < 10? "0" : "") + hour + ":" + (minute < 10? "0" : "") + minute + " " + AM_PM;
     }
 
+    public static String getChatNode(User user, User self) {
+        return self.getUsername().compareTo(user.getUsername()) > 0 ? user.getUsername() + "_" + self.getUsername()
+                : self.getUsername() + "_" + user.getUsername();
+    }
+
+    public static String getChatNode(String one, String two) {
+        return one.compareTo(two) > 0 ? two + "_" + one
+                : one + "_" + two;
+    }
+
+    public static String getKeyForChat(String username) {
+        return "chat_" + username;
+    }
 }

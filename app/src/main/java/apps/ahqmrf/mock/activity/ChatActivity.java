@@ -27,6 +27,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
+import apps.ahqmrf.mock.LastMessage;
 import apps.ahqmrf.mock.Message;
 import apps.ahqmrf.mock.R;
 import apps.ahqmrf.mock.Time;
@@ -57,7 +58,12 @@ public class ChatActivity extends AppCompatActivity {
     RecyclerView chatView;
 
     private User self, user;
-    private DatabaseReference refOnlineStatus, userOnlineStatus, refChat, refType, refTypeUser, refMsg;
+    private DatabaseReference refOnlineStatus;
+    private DatabaseReference userOnlineStatus;
+    private DatabaseReference refType;
+    private DatabaseReference refTypeUser;
+    private DatabaseReference refMsg;
+    private DatabaseReference lastMsg, lastMsg2;
     private ValueEventListener eventListener, typeListener;
     private ChildEventListener msgListener;
     private ChatListAdapter adapter;
@@ -95,11 +101,12 @@ public class ChatActivity extends AppCompatActivity {
                 Utility.getString(this, Const.Keys.PROFILE_PIC)
         );
 
-        String path = self.getUsername().compareTo(user.getUsername()) > 0 ? user.getUsername() + "_" + self.getUsername()
-                : self.getUsername() + "_" + user.getUsername();
+        String path = Utility.getChatNode(user, self);
 
         refOnlineStatus = FirebaseDatabase.getInstance().getReference(Const.Route.ONLINE_STATUS).child(self.getUsername());
-        refChat = FirebaseDatabase.getInstance().getReference(Const.Route.CHAT).child(path);
+        DatabaseReference refChat = FirebaseDatabase.getInstance().getReference(Const.Route.CHAT).child(path);
+        lastMsg = FirebaseDatabase.getInstance().getReference(Const.Route.LAST_MESSAGE).child(self.getUsername()).child(user.getUsername());
+        lastMsg2 = FirebaseDatabase.getInstance().getReference(Const.Route.LAST_MESSAGE).child(user.getUsername()).child(self.getUsername());
         refMsg = refChat.child(Const.Keys.MESSAGES);
         query = refMsg.limitToLast(100);
         refType = refChat.child(self.getUsername()).child(Const.Keys.TYPING_STATUS);
@@ -272,6 +279,19 @@ public class ChatActivity extends AppCompatActivity {
             Message message = new Message(self.getUsername(), user.getUsername(), day, stamp, text);
             refMsg.push().setValue(message);
             msgInput.setText("");
+            LastMessage msg = new LastMessage(
+                    user.getEmail(),
+                    user.getUsername(),
+                    user.getFullName(),
+                    user.getImageUrl(),
+                    message.getSender(),
+                    message.getReceiver(),
+                    message.getDay(),
+                    message.getTime(),
+                    message.getText()
+            );
+            lastMsg.setValue(msg);
+            lastMsg2.setValue(msg);
         }
     }
 }

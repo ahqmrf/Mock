@@ -20,6 +20,7 @@ public final class Const {
         public static final String NOTIFICATION  = "notifications";
         public static final String ONLINE_STATUS = "onlineStatus";
         public static final String CHAT          = "chat";
+        public static final String LAST_MESSAGE  = "lastMessage";
     }
 
     public final class Keys {
@@ -46,7 +47,11 @@ public final class Const {
         public static final String TYPING_STATUS      = "typing";
         public static final String MESSAGES           = "messages";
         public static final String TIME               = "time";
-        public static final String date               = "day";
+        public static final String DATE               = "day";
+        public static final String MESSAGE            = "message";
+        public static final String SENDER             = "sender";
+        public static final String RECEIVER           = "receiver";
+        public static final String TEXT           = "text";
     }
 
     public static final String PREF_NAME = "mock.pref";

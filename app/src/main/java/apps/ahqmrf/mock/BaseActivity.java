@@ -33,6 +33,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.Map;
 
+import apps.ahqmrf.mock.activity.ConversationActivity;
 import apps.ahqmrf.mock.activity.FriendsListActivity;
 import apps.ahqmrf.mock.activity.MyLocationActivity;
 import apps.ahqmrf.mock.activity.NotificationActivity;
@@ -76,11 +77,12 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
         trigger(MyLocationActivity.class);
     }
 
-    @BindView(R.id.image_map)
-    protected ImageView mImageMap;
+    @BindView(R.id.image_chat)
+    protected ImageView mImageChat;
 
-    @OnClick(R.id.image_map)
-    public void showMap() {
+    @OnClick(R.id.image_chat)
+    public void showChat() {
+        trigger(ConversationActivity.class);
     }
 
     @BindView(R.id.image_friends)
@@ -102,14 +104,14 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
         trigger(NotificationActivity.class);
     }
 
-    protected ArrayList<User> userList;
-    protected ArrayList<User> searchResultList;
-    protected UserListAdapter mAdapter;
-    protected MenuItem        item;
-    protected boolean         wasSearchClicked;
-    protected DatabaseReference tempRef;
+    protected ArrayList<User>    userList;
+    protected ArrayList<User>    searchResultList;
+    protected UserListAdapter    mAdapter;
+    protected MenuItem           item;
+    protected boolean            wasSearchClicked;
+    protected DatabaseReference  tempRef;
     protected ValueEventListener notificationListener;
-    protected DatabaseReference refNotification, refOnlineStatus;
+    protected DatabaseReference  refNotification, refOnlineStatus;
     protected int totalNotifications = 0;
 
     @Override
@@ -125,13 +127,13 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot != null) {
-                    if(dataSnapshot.getChildrenCount() > 0) {
-                        int count = (int)dataSnapshot.getChildrenCount();
+                    if (dataSnapshot.getChildrenCount() > 0) {
+                        int count = (int) dataSnapshot.getChildrenCount();
                         totalNotifications = Utility.getInteger(getApplicationContext(), Const.Keys.NOTIFICATION_COUNT);
                         notificationIcon.setText("" + count);
                         notificationIcon.setVisibility(View.VISIBLE);
                         Utility.putInt(getApplicationContext(), Const.Keys.NOTIFICATION_COUNT, count);
-                        if(totalNotifications < count) {
+                        if (totalNotifications < count) {
                             totalNotifications = count;
                             createNotification();
                         }
@@ -140,8 +142,7 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
                         totalNotifications = 0;
                         Utility.putInt(getApplicationContext(), Const.Keys.NOTIFICATION_COUNT, totalNotifications);
                     }
-                }
-                else {
+                } else {
                     notificationIcon.setVisibility(View.GONE);
                     totalNotifications = 0;
                     Utility.putInt(getApplicationContext(), Const.Keys.NOTIFICATION_COUNT, totalNotifications);
@@ -339,8 +340,7 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
             if (username.equals(user.getUsername())) {
                 trigger(SettingsActivity.class);
                 item.collapseActionView();
-            }
-            else {
+            } else {
                 final Intent intent = new Intent(this, UserActivity.class);
                 intent.putExtra(Const.Keys.USER, user);
                 progressList.setVisibility(View.VISIBLE);
@@ -351,16 +351,16 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
                         progressList.setVisibility(View.GONE);
                         if (dataSnapshot.hasChild(user.getUsername())) {
                             String val = dataSnapshot.child(user.getUsername()).child(Const.Keys.STATUS).getValue(String.class);
-                            if(val.equals(Const.Keys.FRIEND))
+                            if (val.equals(Const.Keys.FRIEND))
                                 intent.putExtra(Const.Keys.USER_TYPE, Const.Keys.FRIEND);
-                            else if (val.equals(Const.Keys.REQUESTED)) intent.putExtra(Const.Keys.USER_TYPE, Const.Keys.REQUESTED);
+                            else if (val.equals(Const.Keys.REQUESTED))
+                                intent.putExtra(Const.Keys.USER_TYPE, Const.Keys.REQUESTED);
                             else intent.putExtra(Const.Keys.USER_TYPE, Const.Keys.WANNABE);
                             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                             startActivity(intent);
                             overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
                             item.collapseActionView();
-                        }
-                        else {
+                        } else {
                             intent.putExtra(Const.Keys.USER_TYPE, Const.Keys.STRANGER);
                             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                             startActivity(intent);

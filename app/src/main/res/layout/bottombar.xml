@@ -30,15 +30,40 @@
             android:tint="@color/grey"
             tools:ignore="ContentDescription"/>
 
-        <ImageView
-            android:id="@+id/image_map"
-            style="@style/ClickableView.BottomBarIconStyle"
+        <RelativeLayout
+            android:id="@+id/view_chat"
+            style="@style/ClickableView"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:src="@drawable/ic_map_black_24dp"
-            android:tint="@color/grey"
-            tools:ignore="ContentDescription"/>
+            android:layout_weight="1">
+
+            <ImageView
+                android:id="@+id/image_chat"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_centerInParent="true"
+                android:src="@drawable/ic_message_black_24dp"
+                android:tint="@color/grey"
+                tools:ignore="ContentDescription"/>
+
+            <TextView
+                android:id="@+id/text_chat"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_alignParentTop="true"
+                android:layout_marginLeft="-12dp"
+                android:layout_toEndOf="@id/image_chat"
+                android:layout_toRightOf="@id/image_chat"
+                android:background="@drawable/circular_red_bg"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                android:visibility="gone"
+                tools:ignore="RtlHardcoded"
+                tools:text="2"
+                tools:visibility="visible"/>
+
+        </RelativeLayout>
 
         <ImageView
             android:id="@+id/image_friends"

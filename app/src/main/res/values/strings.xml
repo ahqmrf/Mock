@@ -46,4 +46,5 @@
     <string name="label_no_new_notifications">No new notifications.</string>
     <string name="label_no_friend">You have not added any friend yet</string>
     <string name="hint_write_a_message">Write a message...</string>
+    <string name="label_no_conversation">No conversation to show</string>
 </resources>

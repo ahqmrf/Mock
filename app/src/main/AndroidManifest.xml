@@ -49,9 +49,13 @@
         <activity
             android:name=".activity.NotificationActivity"
             android:launchMode="singleTask"/>
-        <activity android:name=".activity.ChatActivity"
+        <activity
+            android:name=".activity.ChatActivity"
             android:windowSoftInputMode="adjustPan">
         </activity>
+        <activity
+            android:name=".activity.ConversationActivity"
+            android:launchMode="singleTask"/>
     </application>
 
 </manifest>

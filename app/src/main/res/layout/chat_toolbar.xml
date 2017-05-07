@@ -4,6 +4,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="?attr/actionBarSize"
+    app:layout_collapseMode="pin"
     app:titleTextAppearance="@style/Toolbar.TitleText"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/colorPrimary"
@@ -18,6 +19,6 @@
         android:padding="16dp"
         android:src="@drawable/ic_dot_black"
         android:layout_gravity="end"
-        android:tint="@color/green"/>
+        android:tint="@color/whitey_grey"/>
 
 </android.support.v7.widget.Toolbar>

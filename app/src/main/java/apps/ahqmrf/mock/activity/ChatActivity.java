@@ -1,6 +1,7 @@
 package apps.ahqmrf.mock.activity;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -60,6 +61,23 @@ public class ChatActivity extends AppCompatActivity {
     private ChildEventListener msgListener;
     private ChatListAdapter adapter;
     private ArrayList<Message> msgs = new ArrayList<>();
+    private int last = -1;
+
+    long delay = 1000; // 1 seconds after user stops typing
+    long last_text_edit = 0;
+    Handler handler = new Handler();
+
+    private Runnable input_finish_checker = new Runnable() {
+        public void run() {
+            if (System.currentTimeMillis() > (last_text_edit + delay - 500)) {
+                // TODO: do what you need here
+                // ............
+                // ............
+                refType.setValue(true);
+
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,6 +130,17 @@ public class ChatActivity extends AppCompatActivity {
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 if(dataSnapshot != null && dataSnapshot.getValue() != null) {
                     Message model = dataSnapshot.getValue(Message.class);
+                    if(model.getSender().equals(user.getUsername())) {
+                        model.setLast(true);
+                        int pos = msgs.size();
+                        if(last != -1 && pos - last == 1) {
+                            Message msg = msgs.get(last);
+                            msg.setLast(false);
+                            msgs.set(last, msg);
+                            adapter.notifyItemChanged(last);
+                        }
+                        last = pos;
+                    } else model.setLast(false);
                     msgs.add(model);
                     chatView.scrollToPosition(msgs.size() - 1);
                     adapter.notifyItemInserted(msgs.size() - 1);
@@ -145,11 +174,14 @@ public class ChatActivity extends AppCompatActivity {
                 if (dataSnapshot != null) {
                     if (dataSnapshot.getValue() != null) {
                         boolean isTyping = (boolean) dataSnapshot.getValue();
-                        if (isTyping) typing.setVisibility(View.VISIBLE);
-                        else typing.setVisibility(View.INVISIBLE);
-                    } else typing.setVisibility(View.INVISIBLE);
+                        if (isTyping) {
+                            typing.setVisibility(View.VISIBLE);
+                            chatView.scrollToPosition(msgs.size() - 1);
+                        }
+                        else typing.setVisibility(View.GONE);
+                    } else typing.setVisibility(View.GONE);
                 } else {
-                    typing.setVisibility(View.INVISIBLE);
+                    typing.setVisibility(View.GONE);
                 }
             }
 
@@ -169,26 +201,30 @@ public class ChatActivity extends AppCompatActivity {
             setTitle(user.getFullName());
         }
 
+
+
         msgInput.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                refType.setValue(false);
+
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if(TextUtils.isEmpty(s.toString())) refType.setValue(false);
-                else refType.setValue(true);
+                handler.removeCallbacks(input_finish_checker);
             }
 
             @Override
             public void afterTextChanged(Editable s) {
-                if(TextUtils.isEmpty(s.toString())) refType.setValue(false);
+                if (s.length() > 0) {
+                    last_text_edit = System.currentTimeMillis();
+                    handler.postDelayed(input_finish_checker, delay);
+                }  else refType.setValue(false);
             }
         });
 
         chatView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        adapter = new ChatListAdapter(this, msgs);
+        adapter = new ChatListAdapter(this, msgs, user.getImageUrl());
         chatView.setAdapter(adapter);
     }
 

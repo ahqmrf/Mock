@@ -75,6 +75,7 @@ public class UserActivity extends BaseActivity {
         fullName.setText(thisUserFullName);
         if (!TextUtils.isEmpty(user.getImageUrl()))
             Utility.loadImage(user.getImageUrl(), imageView, progressLayout);
+        else  progressLayout.setVisibility(View.GONE);
     }
 
     @OnClick(R.id.image_more)

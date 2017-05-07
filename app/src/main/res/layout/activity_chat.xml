@@ -1,26 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical"
     tools:context="apps.ahqmrf.mock.activity.ChatActivity">
 
     <include
         android:id="@+id/app_toolbar"
-        layout="@layout/chat_toolbar"/>
+        layout="@layout/chat_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_gravity="top"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler_chats"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:paddingBottom="8dp"
+        android:overScrollMode="always"/>
 
     <RelativeLayout
         android:id="@+id/layout_send"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true">
+        android:layout_gravity="bottom">
+
+        <ImageView
+            android:id="@+id/card_typing"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
+            android:padding="4dp"
+            android:src="@drawable/ic_more_horiz_black_24dp"
+            android:tint="@color/grey"
+            android:visibility="gone"
+            tools:visibility="visible"/>
 
         <View
             android:id="@+id/line"
             android:layout_width="match_parent"
             android:layout_height="0.5dp"
+            android:layout_below="@id/card_typing"
             android:background="@color/whitey_grey"/>
 
 
@@ -40,10 +67,10 @@
             android:id="@+id/input_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="bottom"
             android:layout_below="@id/line"
             android:layout_toStartOf="@id/image_send"
             android:background="@android:color/transparent"
+            android:gravity="bottom"
             android:hint="@string/hint_write_a_message"
             android:inputType="textMultiLine"
             android:maxLines="3"
@@ -57,27 +84,5 @@
     </RelativeLayout>
 
 
-        <ImageView
-            android:id="@+id/card_typing"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:padding="4dp"
-            android:layout_above="@id/layout_send"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="8dp"
-            android:visibility="invisible"
-            tools:visibility="visible"
-            android:layout_marginBottom="8dp"
-            android:src="@drawable/ic_more_horiz_black_24dp"
-            android:tint="@color/grey"/>
+</LinearLayout>
 
-
-    <android.support.v7.widget.RecyclerView
-        android:layout_below="@id/app_toolbar"
-        android:id="@+id/recycler_chats"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@id/card_typing"/>
-
-
-</RelativeLayout>

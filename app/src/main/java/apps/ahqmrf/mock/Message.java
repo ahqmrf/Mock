@@ -10,6 +10,7 @@ public class Message {
     private String day;
     private String time;
     private String text;
+    private boolean isLast;
 
     public Message() {
 
@@ -21,6 +22,14 @@ public class Message {
         this.day = day;
         this.time = time;
         this.text = text;
+    }
+
+    public boolean isLast() {
+        return isLast;
+    }
+
+    public void setLast(boolean last) {
+        isLast = last;
     }
 
     public String getSender() {

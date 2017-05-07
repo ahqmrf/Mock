@@ -22,6 +22,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
@@ -62,6 +63,7 @@ public class ChatActivity extends AppCompatActivity {
     private ChatListAdapter adapter;
     private ArrayList<Message> msgs = new ArrayList<>();
     private int last = -1;
+    private Query query;
 
     long delay = 1000; // 1 seconds after user stops typing
     long last_text_edit = 0;
@@ -99,6 +101,7 @@ public class ChatActivity extends AppCompatActivity {
         refOnlineStatus = FirebaseDatabase.getInstance().getReference(Const.Route.ONLINE_STATUS).child(self.getUsername());
         refChat = FirebaseDatabase.getInstance().getReference(Const.Route.CHAT).child(path);
         refMsg = refChat.child(Const.Keys.MESSAGES);
+        query = refMsg.limitToLast(100);
         refType = refChat.child(self.getUsername()).child(Const.Keys.TYPING_STATUS);
         refTypeUser = refChat.child(user.getUsername()).child(Const.Keys.TYPING_STATUS);
         userOnlineStatus = FirebaseDatabase.getInstance().getReference(Const.Route.ONLINE_STATUS).child(user.getUsername());
@@ -243,7 +246,8 @@ public class ChatActivity extends AppCompatActivity {
         refOnlineStatus.setValue(Const.Keys.ONLINE);
         userOnlineStatus.addValueEventListener(eventListener);
         refTypeUser.addValueEventListener(typeListener);
-        refMsg.addChildEventListener(msgListener);
+        //refMsg.addChildEventListener(msgListener);
+        query.addChildEventListener(msgListener);
         refType.setValue(false);
     }
 
@@ -252,7 +256,8 @@ public class ChatActivity extends AppCompatActivity {
         super.onPause();
         userOnlineStatus.removeEventListener(eventListener);
         refTypeUser.removeEventListener(typeListener);
-        refMsg.removeEventListener(msgListener);
+        //refMsg.removeEventListener(msgListener);
+        query.removeEventListener(msgListener);
         refType.setValue(false);
     }
 

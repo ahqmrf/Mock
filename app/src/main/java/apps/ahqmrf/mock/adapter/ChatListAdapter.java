@@ -1,6 +1,8 @@
 package apps.ahqmrf.mock.adapter;
 
 import android.content.Context;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
@@ -17,6 +19,7 @@ import apps.ahqmrf.mock.util.Const;
 import apps.ahqmrf.mock.util.Utility;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 /**
  * Created by Lenovo on 5/4/2017.
@@ -29,6 +32,7 @@ public class ChatListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private ArrayList<Object> mItems;
     private String username;
     private String imageUrl;
+    private int prev = -1;
 
     private int SENDER = 0;
 
@@ -75,6 +79,15 @@ public class ChatListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         if(msg.isLast()) {
             holder.imageView.setVisibility(View.VISIBLE);
         } else holder.imageView.setVisibility(View.INVISIBLE);
+        if(msg.isClicked()) {
+            if(getItemViewType(position) == SENDER) holder.card.setCardBackgroundColor(ContextCompat.getColor(mContext, R.color.colorPrimaryDark));
+            else holder.card.setCardBackgroundColor(ContextCompat.getColor(mContext, R.color.grey));
+            holder.time.setVisibility(View.VISIBLE);
+        } else {
+            if(getItemViewType(position) == SENDER) holder.card.setCardBackgroundColor(ContextCompat.getColor(mContext, R.color.colorPrimary));
+            else holder.card.setCardBackgroundColor(ContextCompat.getColor(mContext, R.color.whitey_grey));
+            holder.time.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -97,10 +110,26 @@ public class ChatListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         TextView time;
         @BindView(R.id.image_main)
         ImageView imageView;
+        @BindView(R.id.card_text)
+        CardView card;
 
         public ViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+        }
+
+        @OnClick(R.id.card_text)
+        void onCardClick() {
+            int pos = getAdapterPosition();
+            Message msg = (Message) mItems.get(pos);
+            msg.setClicked(!msg.isClicked());
+            notifyItemChanged(pos);
+            if(prev != -1 && prev != pos) {
+                msg = (Message) mItems.get(prev);
+                msg.setClicked(false);
+                notifyItemChanged(prev);
+            }
+            prev = pos;
         }
     }
 

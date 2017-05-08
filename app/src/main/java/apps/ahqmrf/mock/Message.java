@@ -13,6 +13,15 @@ public class Message {
     private boolean isLast;
     private boolean seen;
     private int id;
+    private boolean clicked;
+
+    public boolean isClicked() {
+        return clicked;
+    }
+
+    public void setClicked(boolean clicked) {
+        this.clicked = clicked;
+    }
 
     public Message() {
 
@@ -27,6 +36,7 @@ public class Message {
         this.isLast = isLast;
         this.seen = seen;
         this.id = id;
+        this.clicked = false;
     }
 
     public int getId() {

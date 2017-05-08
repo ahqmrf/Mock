@@ -204,21 +204,17 @@ public class ChatActivity extends AppCompatActivity {
                         if (isTyping) {
                             msgs.set(msgs.size() - 1, true);
                             adapter.notifyItemChanged(msgs.size() - 1);
-                           // typing.setVisibility(View.VISIBLE);
                             chatView.scrollToPosition(msgs.size() - 1);
                         }
                         else {
-                           // typing.setVisibility(View.GONE);
                             msgs.set(msgs.size() - 1, false);
                             adapter.notifyItemChanged(msgs.size() - 1);
                         }
                     } else {
-                        //typing.setVisibility(View.GONE);
                         msgs.set(msgs.size() - 1, false);
                         adapter.notifyItemChanged(msgs.size() - 1);
                     }
                 } else {
-                    //typing.setVisibility(View.GONE);
                     msgs.set(msgs.size() - 1, false);
                     adapter.notifyItemChanged(msgs.size() - 1);
                 }

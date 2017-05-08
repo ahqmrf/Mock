@@ -1,29 +1,17 @@
 package apps.ahqmrf.mock.activity;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.assist.FailReason;
-import com.nostra13.universalimageloader.core.listener.ImageLoadingProgressListener;
-import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
 import apps.ahqmrf.mock.BaseActivity;
 import apps.ahqmrf.mock.R;
 import apps.ahqmrf.mock.util.Const;
-import apps.ahqmrf.mock.util.MyDisplayImageOptions;
 import apps.ahqmrf.mock.util.Utility;
 import butterknife.BindString;
 import butterknife.BindView;

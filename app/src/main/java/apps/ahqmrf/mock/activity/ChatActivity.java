@@ -49,11 +49,12 @@ public class ChatActivity extends AppCompatActivity {
     @BindView(R.id.image_online_status)
     ImageView onlineStatus;
 
-    @BindView(R.id.card_typing)
-    ImageView typing;
+    /*@BindView(R.id.card_typing)
+    ImageView typing;*/
 
     @BindView(R.id.recycler_chats)
     RecyclerView chatView;
+
 
     private User self, user;
     private DatabaseReference refOnlineStatus;
@@ -64,9 +65,10 @@ public class ChatActivity extends AppCompatActivity {
     private ValueEventListener eventListener, typeListener;
     private ChildEventListener msgListener;
     private ChatListAdapter adapter;
-    private ArrayList<Message> msgs = new ArrayList<>();
+    private ArrayList<Object> msgs = new ArrayList<>();
     private int last = -1;
     private int sentLast = -1;
+    private int count = 0;
     private Query query;
 
     long delay = 1000; // 1 seconds after user stops typing
@@ -125,22 +127,24 @@ public class ChatActivity extends AppCompatActivity {
             }
         };
 
+        msgs.add(true);
         msgListener = new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 if(dataSnapshot != null && dataSnapshot.getValue() != null) {
+
                     Message model = dataSnapshot.getValue(Message.class);
                     if(model.getId() == -1) {
-                        model.setId(msgs.size());
+                        model.setId(msgs.size() - 1);
                         dataSnapshot.getRef().setValue(model);
                     }
                     if(model.getSender().equals(user.getUsername())) {
                         model.setSeen(true);
                         dataSnapshot.getRef().setValue(model);
                         model.setLast(true);
-                        int pos = msgs.size();
+                        int pos = msgs.size() - 1;
                         if(last != -1 && pos - last == 1) {
-                            Message msg = msgs.get(last);
+                            Message msg = (Message) msgs.get(last);
                             msg.setLast(false);
                             msgs.set(last, msg);
                             adapter.notifyItemChanged(last);
@@ -148,18 +152,18 @@ public class ChatActivity extends AppCompatActivity {
                         last = pos;
                     } else {
                         model.setLast(true);
-                        int pos = msgs.size();
+                        int pos = msgs.size() - 1;
                         if(sentLast != -1) {
-                            Message msg = msgs.get(sentLast);
+                            Message msg = (Message)msgs.get(sentLast);
                             msg.setLast(false);
                             msgs.set(sentLast, msg);
                             adapter.notifyItemChanged(sentLast);
                         }
                         sentLast = pos;
                     }
-                    msgs.add(model);
-                    chatView.scrollToPosition(msgs.size() - 1);
-                    adapter.notifyItemInserted(msgs.size() - 1);
+                    msgs.add(msgs.size() - 1, model);
+                    chatView.scrollToPosition(msgs.size() - 2);
+                    adapter.notifyItemInserted(msgs.size() - 2);
                 }
             }
 
@@ -197,13 +201,25 @@ public class ChatActivity extends AppCompatActivity {
                     if (dataSnapshot.getValue() != null) {
                         boolean isTyping = (boolean) dataSnapshot.getValue();
                         if (isTyping) {
-                            typing.setVisibility(View.VISIBLE);
+                            msgs.set(msgs.size() - 1, true);
+                            adapter.notifyItemChanged(msgs.size() - 1);
+                           // typing.setVisibility(View.VISIBLE);
                             chatView.scrollToPosition(msgs.size() - 1);
                         }
-                        else typing.setVisibility(View.GONE);
-                    } else typing.setVisibility(View.GONE);
+                        else {
+                           // typing.setVisibility(View.GONE);
+                            msgs.set(msgs.size() - 1, false);
+                            adapter.notifyItemChanged(msgs.size() - 1);
+                        }
+                    } else {
+                        //typing.setVisibility(View.GONE);
+                        msgs.set(msgs.size() - 1, false);
+                        adapter.notifyItemChanged(msgs.size() - 1);
+                    }
                 } else {
-                    typing.setVisibility(View.GONE);
+                    //typing.setVisibility(View.GONE);
+                    msgs.set(msgs.size() - 1, false);
+                    adapter.notifyItemChanged(msgs.size() - 1);
                 }
             }
 

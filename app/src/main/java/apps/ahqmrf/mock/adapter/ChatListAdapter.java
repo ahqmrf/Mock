@@ -22,16 +22,17 @@ import butterknife.ButterKnife;
  * Created by Lenovo on 5/4/2017.
  */
 
-public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHolder> {
+public class ChatListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
+    private static final int TYPING = 3;
     private Context mContext;
-    private ArrayList<Message> mItems;
+    private ArrayList<Object> mItems;
     private String username;
     private String imageUrl;
 
     private int SENDER = 0;
 
-    public ChatListAdapter(Context mContext, ArrayList<Message> mItems, String imageUrl) {
+    public ChatListAdapter(Context mContext, ArrayList<Object> mItems, String imageUrl) {
         this.mContext = mContext;
         this.mItems = mItems;
         this.username = Utility.getString(mContext, Const.Keys.USERNAME);
@@ -39,7 +40,11 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
     }
 
     @Override
-    public ChatListAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        if(viewType == TYPING) {
+            View view = LayoutInflater.from(mContext).inflate(R.layout.typing, parent, false);
+            return new TypingView(view);
+        }
         if(viewType == SENDER) {
             View view = LayoutInflater.from(mContext).inflate(R.layout.list_item_chat_sender, parent, false);
             return new ViewHolder(view);
@@ -49,8 +54,17 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
     }
 
     @Override
-    public void onBindViewHolder(ChatListAdapter.ViewHolder holder, int position) {
-        Message msg = mItems.get(position);
+    public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
+        if(getItemViewType(position) == TYPING) {
+            TypingView holder = (TypingView) viewHolder;
+            Utility.loadImage(imageUrl, holder.imageView);
+            Boolean val = (Boolean) mItems.get(position);
+            if(val) holder.typing.setVisibility(View.VISIBLE);
+            else holder.typing.setVisibility(View.GONE);
+            return;
+        }
+        ViewHolder holder = (ViewHolder) viewHolder;
+        Message msg = (Message) mItems.get(position);
         holder.msg.setText(msg.getText());
         holder.time.setText(msg.getTime());
         if(getItemViewType(position) == SENDER) {
@@ -70,7 +84,8 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
 
     @Override
     public int getItemViewType(int position) {
-        Message msg = mItems.get(position);
+        if(mItems.get(position) instanceof Boolean) return TYPING;
+        Message msg = (Message)mItems.get(position);
         if(username.equals(msg.getSender())) return SENDER;
         else return 1;
     }
@@ -86,6 +101,18 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
         public ViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+        }
+    }
+
+    public class TypingView extends RecyclerView.ViewHolder {
+
+        View typing;
+        ImageView imageView;
+
+        public TypingView(View view) {
+            super(view);
+            typing = view.findViewById(R.id.typing);
+            imageView = (ImageView) view.findViewById(R.id.image_main);
         }
     }
 }

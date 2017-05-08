@@ -26,13 +26,10 @@ import apps.ahqmrf.mock.util.Utility;
 public class LocationUpdateService extends Service implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
-    private GoogleApiClient mGoogleApiClient;
-    private LocationRequest mLocationRequest;
-    protected Location mCurrentLocation;
+    private   GoogleApiClient mGoogleApiClient;
+    private   LocationRequest mLocationRequest;
+    protected Location        mCurrentLocation;
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
-    private DatabaseReference refLocation;
-    private DatabaseReference refLat;
-    private DatabaseReference refLng;
 
 
     public LocationUpdateService() {
@@ -40,7 +37,6 @@ public class LocationUpdateService extends Service implements GoogleApiClient.Co
 
     @Override
     public IBinder onBind(Intent intent) {
-        // TODO: Return the communication channel to the service.
         return null;
     }
 
@@ -59,11 +55,8 @@ public class LocationUpdateService extends Service implements GoogleApiClient.Co
     public int onStartCommand(Intent intent, int flags, int startId) {
         mLocationRequest = new LocationRequest();
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        //Set the desired interval for active location updates, in milliseconds.
         mLocationRequest.setInterval(5 * 1000);
-        //Explicitly set the fastest interval for location updates, in milliseconds.
         mLocationRequest.setFastestInterval(5 * 1000);
-        //Set the minimum displacement between location updates in meters
         mLocationRequest.setSmallestDisplacement(10); // float
 
         return super.onStartCommand(intent, flags, startId);
@@ -73,7 +66,6 @@ public class LocationUpdateService extends Service implements GoogleApiClient.Co
     public void onConnected(@Nullable Bundle bundle) {
         if (mCurrentLocation == null) {
             if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                Utility.showToast(getApplicationContext(), "Failed to start service");
                 Utility.put(this, Const.Keys.SERVICE_STARTED, false);
                 return;
             }
@@ -81,7 +73,6 @@ public class LocationUpdateService extends Service implements GoogleApiClient.Co
         }
 
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            Utility.showToast(getApplicationContext(), "Failed to start service");
             Utility.put(this, Const.Keys.SERVICE_STARTED, false);
             return;
         }
@@ -97,17 +88,16 @@ public class LocationUpdateService extends Service implements GoogleApiClient.Co
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        Utility.showToast(getApplicationContext(), "Failed to connect google map api");
         Utility.put(this, Const.Keys.SERVICE_STARTED, false);
     }
 
     @Override
     public void onLocationChanged(Location location) {
         String username = Utility.getString(getApplicationContext(), Const.Keys.USERNAME);
-        if(!TextUtils.isEmpty(username)) {
-            refLocation = database.getReference(Const.Route.LOCATION_REF).child(username);
-            refLat = refLocation.child(Const.Keys.LATITUDE);
-            refLng = refLocation.child(Const.Keys.LONGITUDE);
+        if (!TextUtils.isEmpty(username)) {
+            DatabaseReference refLocation = database.getReference(Const.Route.LOCATION_REF).child(username);
+            DatabaseReference refLat = refLocation.child(Const.Keys.LATITUDE);
+            DatabaseReference refLng = refLocation.child(Const.Keys.LONGITUDE);
             refLat.setValue(location.getLatitude());
             refLng.setValue(location.getLongitude());
         }

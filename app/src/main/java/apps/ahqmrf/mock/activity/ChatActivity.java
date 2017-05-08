@@ -49,11 +49,11 @@ public class ChatActivity extends AppCompatActivity {
     @BindView(R.id.image_online_status)
     ImageView onlineStatus;
 
-    /*@BindView(R.id.card_typing)
-    ImageView typing;*/
-
     @BindView(R.id.recycler_chats)
     RecyclerView chatView;
+
+   /* @BindView(R.id.layout_progress)
+    View progressLayout;*/
 
 
     private User self, user;
@@ -127,12 +127,12 @@ public class ChatActivity extends AppCompatActivity {
             }
         };
 
-        msgs.add(true);
+        msgs.add(false);
+
         msgListener = new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 if(dataSnapshot != null && dataSnapshot.getValue() != null) {
-
                     Message model = dataSnapshot.getValue(Message.class);
                     if(model.getId() == -1) {
                         model.setId(msgs.size() - 1);
@@ -198,6 +198,7 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot != null) {
+
                     if (dataSnapshot.getValue() != null) {
                         boolean isTyping = (boolean) dataSnapshot.getValue();
                         if (isTyping) {
@@ -261,7 +262,9 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
 
-        chatView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        LinearLayoutManager manager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        manager.setStackFromEnd(true);
+        chatView.setLayoutManager(manager);
         adapter = new ChatListAdapter(this, msgs, user.getImageUrl());
         chatView.setAdapter(adapter);
 

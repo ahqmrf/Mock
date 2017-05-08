@@ -50,8 +50,7 @@
             android:name=".activity.NotificationActivity"
             android:launchMode="singleTask"/>
         <activity
-            android:name=".activity.ChatActivity"
-            android:windowSoftInputMode="adjustPan">
+            android:name=".activity.ChatActivity">
         </activity>
     </application>
 

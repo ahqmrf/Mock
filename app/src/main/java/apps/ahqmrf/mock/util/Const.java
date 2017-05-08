@@ -44,14 +44,15 @@ public final class Const {
         public static final String ACCEPTED           = "accepted";
         public static final String ONLINE             = "online";
         public static final String OFFLINE            = "offline";
-        public static final String TYPING_STATUS      = "typing";
-        public static final String MESSAGES           = "messages";
-        public static final String TIME               = "time";
-        public static final String DATE               = "day";
-        public static final String MESSAGE            = "message";
-        public static final String SENDER             = "sender";
-        public static final String RECEIVER           = "receiver";
-        public static final String TEXT           = "text";
+        public static final String TYPING_STATUS = "typing";
+        public static final String MESSAGES      = "messages";
+        public static final String TIME          = "time";
+        public static final String DATE          = "day";
+        public static final String MESSAGE       = "message";
+        public static final String SENDER        = "sender";
+        public static final String RECEIVER      = "receiver";
+        public static final String TEXT          = "text";
+        public static final String SEEN          = "seen";
     }
 
     public static final String PREF_NAME = "mock.pref";

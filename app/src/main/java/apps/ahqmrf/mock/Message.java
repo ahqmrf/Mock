@@ -11,17 +11,38 @@ public class Message {
     private String time;
     private String text;
     private boolean isLast;
+    private boolean seen;
+    private int id;
 
     public Message() {
 
     }
 
-    public Message(String sender, String receiver, String day, String time, String text) {
+    public Message(String sender, String receiver, String day, String time, String text, boolean isLast, boolean seen, int id) {
         this.sender = sender;
         this.receiver = receiver;
         this.day = day;
         this.time = time;
         this.text = text;
+        this.isLast = isLast;
+        this.seen = seen;
+        this.id = id;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public boolean isSeen() {
+        return seen;
+    }
+
+    public void setSeen(boolean seen) {
+        this.seen = seen;
     }
 
     public boolean isLast() {

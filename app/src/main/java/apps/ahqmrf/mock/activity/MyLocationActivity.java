@@ -87,11 +87,6 @@ public class MyLocationActivity extends BaseActivity implements OnMapReadyCallba
         refUsername.setValue(thisUserName);
         mImageLocation.setColorFilter(ContextCompat.getColor(this, R.color.black));
         setToolbarWithBackArrow();
-        boolean serviceStarted = Utility.getBoolean(this, Const.Keys.SERVICE_STARTED);
-        if(!serviceStarted) {
-            Utility.put(this, Const.Keys.SERVICE_STARTED, true);
-            startService(new Intent(this, LocationUpdateService.class));
-        }
     }
 
     @Override

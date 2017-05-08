@@ -5,7 +5,6 @@ import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -27,7 +26,6 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
-import apps.ahqmrf.mock.LastMessage;
 import apps.ahqmrf.mock.Message;
 import apps.ahqmrf.mock.R;
 import apps.ahqmrf.mock.Time;
@@ -63,12 +61,12 @@ public class ChatActivity extends AppCompatActivity {
     private DatabaseReference refType;
     private DatabaseReference refTypeUser;
     private DatabaseReference refMsg;
-    private DatabaseReference lastMsg, lastMsg2;
     private ValueEventListener eventListener, typeListener;
     private ChildEventListener msgListener;
     private ChatListAdapter adapter;
     private ArrayList<Message> msgs = new ArrayList<>();
     private int last = -1;
+    private int sentLast = -1;
     private Query query;
 
     long delay = 1000; // 1 seconds after user stops typing
@@ -78,11 +76,7 @@ public class ChatActivity extends AppCompatActivity {
     private Runnable input_finish_checker = new Runnable() {
         public void run() {
             if (System.currentTimeMillis() > (last_text_edit + delay - 500)) {
-                // TODO: do what you need here
-                // ............
-                // ............
                 refType.setValue(true);
-
             }
         }
     };
@@ -103,15 +97,14 @@ public class ChatActivity extends AppCompatActivity {
 
         String path = Utility.getChatNode(user, self);
 
-        refOnlineStatus = FirebaseDatabase.getInstance().getReference(Const.Route.ONLINE_STATUS).child(self.getUsername());
+        refOnlineStatus = FirebaseDatabase.getInstance().getReference(Const.Route.ONLINE_STATUS).child(self.getUsername()).child(user.getUsername());
+        refOnlineStatus.setValue(Const.Keys.ONLINE);
         DatabaseReference refChat = FirebaseDatabase.getInstance().getReference(Const.Route.CHAT).child(path);
-        lastMsg = FirebaseDatabase.getInstance().getReference(Const.Route.LAST_MESSAGE).child(self.getUsername()).child(user.getUsername());
-        lastMsg2 = FirebaseDatabase.getInstance().getReference(Const.Route.LAST_MESSAGE).child(user.getUsername()).child(self.getUsername());
         refMsg = refChat.child(Const.Keys.MESSAGES);
         query = refMsg.limitToLast(100);
         refType = refChat.child(self.getUsername()).child(Const.Keys.TYPING_STATUS);
         refTypeUser = refChat.child(user.getUsername()).child(Const.Keys.TYPING_STATUS);
-        userOnlineStatus = FirebaseDatabase.getInstance().getReference(Const.Route.ONLINE_STATUS).child(user.getUsername());
+        userOnlineStatus = FirebaseDatabase.getInstance().getReference(Const.Route.ONLINE_STATUS).child(user.getUsername()).child(self.getUsername());
         eventListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -123,9 +116,6 @@ public class ChatActivity extends AppCompatActivity {
                         onlineStatus.setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.whitey_grey));
                         userOnlineStatus.setValue(Const.Keys.OFFLINE);
                     }
-                } else {
-                    userOnlineStatus.setValue(Const.Keys.OFFLINE);
-                    onlineStatus.setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.whitey_grey));
                 }
             }
 
@@ -140,7 +130,13 @@ public class ChatActivity extends AppCompatActivity {
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 if(dataSnapshot != null && dataSnapshot.getValue() != null) {
                     Message model = dataSnapshot.getValue(Message.class);
+                    if(model.getId() == -1) {
+                        model.setId(msgs.size());
+                        dataSnapshot.getRef().setValue(model);
+                    }
                     if(model.getSender().equals(user.getUsername())) {
+                        model.setSeen(true);
+                        dataSnapshot.getRef().setValue(model);
                         model.setLast(true);
                         int pos = msgs.size();
                         if(last != -1 && pos - last == 1) {
@@ -150,7 +146,17 @@ public class ChatActivity extends AppCompatActivity {
                             adapter.notifyItemChanged(last);
                         }
                         last = pos;
-                    } else model.setLast(false);
+                    } else {
+                        model.setLast(true);
+                        int pos = msgs.size();
+                        if(sentLast != -1) {
+                            Message msg = msgs.get(sentLast);
+                            msg.setLast(false);
+                            msgs.set(sentLast, msg);
+                            adapter.notifyItemChanged(sentLast);
+                        }
+                        sentLast = pos;
+                    }
                     msgs.add(model);
                     chatView.scrollToPosition(msgs.size() - 1);
                     adapter.notifyItemInserted(msgs.size() - 1);
@@ -159,7 +165,13 @@ public class ChatActivity extends AppCompatActivity {
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
+                if(dataSnapshot != null && dataSnapshot.getValue() != null) {
+                    Message model = dataSnapshot.getValue(Message.class);
+                    if(model.getSender().equals(self.getUsername())) {
+                        msgs.set(model.getId(), model);
+                        adapter.notifyItemChanged(model.getId());
+                    }
+                }
             }
 
             @Override
@@ -236,6 +248,7 @@ public class ChatActivity extends AppCompatActivity {
         chatView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         adapter = new ChatListAdapter(this, msgs, user.getImageUrl());
         chatView.setAdapter(adapter);
+
     }
 
     @Override
@@ -253,7 +266,6 @@ public class ChatActivity extends AppCompatActivity {
         refOnlineStatus.setValue(Const.Keys.ONLINE);
         userOnlineStatus.addValueEventListener(eventListener);
         refTypeUser.addValueEventListener(typeListener);
-        //refMsg.addChildEventListener(msgListener);
         query.addChildEventListener(msgListener);
         refType.setValue(false);
     }
@@ -261,9 +273,9 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
+        refOnlineStatus.setValue(Const.Keys.OFFLINE);
         userOnlineStatus.removeEventListener(eventListener);
         refTypeUser.removeEventListener(typeListener);
-        //refMsg.removeEventListener(msgListener);
         query.removeEventListener(msgListener);
         refType.setValue(false);
     }
@@ -276,22 +288,9 @@ public class ChatActivity extends AppCompatActivity {
             Time time = Utility.getCurrentTime();
             String day = time.getDate();
             String stamp = Utility.get12HourTimeStamp(time);
-            Message message = new Message(self.getUsername(), user.getUsername(), day, stamp, text);
+            Message message = new Message(self.getUsername(), user.getUsername(), day, stamp, text, true, false, -1);
             refMsg.push().setValue(message);
             msgInput.setText("");
-            LastMessage msg = new LastMessage(
-                    user.getEmail(),
-                    user.getUsername(),
-                    user.getFullName(),
-                    user.getImageUrl(),
-                    message.getSender(),
-                    message.getReceiver(),
-                    message.getDay(),
-                    message.getTime(),
-                    message.getText()
-            );
-            lastMsg.setValue(msg);
-            lastMsg2.setValue(msg);
         }
     }
 }

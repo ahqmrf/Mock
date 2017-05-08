@@ -1,58 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="horizontal"
-    android:gravity="end"
-    android:layout_marginStart="56dp"
-    android:layout_marginEnd="16dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="2dp"
+    android:layout_marginEnd="8dp"
     android:layout_marginTop="2dp"
-    android:layout_marginBottom="2dp">
+    android:gravity="end"
+    android:orientation="horizontal">
 
-    <android.support.v7.widget.CardView
-        android:layout_width="wrap_content"
+
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="end"
-        app:cardBackgroundColor="@color/colorPrimary"
-        app:cardCornerRadius="4dp"
-        android:padding="4dp">
-        
-        <LinearLayout
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/text_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="36dp"
+            android:gravity="center"
+            android:padding="4dp"
+            android:visibility="gone"
+            android:textSize="12sp"
+            tools:text="6:55 PM"/>
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/card_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_gravity="end"
+            android:layout_marginStart="56dp"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:padding="4dp"
+            app:cardBackgroundColor="@color/colorPrimary"
+            app:cardCornerRadius="16dp">
 
             <TextView
                 android:id="@+id/text_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="16sp"
-                android:textColor="@color/white"
-                android:paddingStart="8dp"
+                android:paddingBottom="4dp"
                 android:paddingEnd="8dp"
+                android:paddingStart="8dp"
                 android:paddingTop="4dp"
+                android:textColor="@color/white"
+                android:textSize="16sp"
                 tools:text="hellow friend"/>
 
-            <TextView
-                android:id="@+id/text_time"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="end"
-                android:padding="8dp"
-                android:textSize="12sp"
-                android:textColor="@color/white"
-                tools:text="6:55 PM"/>
+        </android.support.v7.widget.CardView>
 
-        </LinearLayout>
+    </LinearLayout>
 
-    </android.support.v7.widget.CardView>
 
-    <ImageView
+    <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/image_main"
-        android:layout_width="0dp"
-        android:layout_height="0dp"/>
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_gravity="bottom"
+        android:layout_marginStart="4dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_check_black_24dp"
+        android:visibility="invisible"/>
 
 </LinearLayout>

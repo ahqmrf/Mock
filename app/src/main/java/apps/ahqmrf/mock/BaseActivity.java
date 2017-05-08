@@ -24,6 +24,7 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -33,7 +34,6 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.Map;
 
-import apps.ahqmrf.mock.activity.ConversationActivity;
 import apps.ahqmrf.mock.activity.FriendsListActivity;
 import apps.ahqmrf.mock.activity.MyLocationActivity;
 import apps.ahqmrf.mock.activity.NotificationActivity;
@@ -41,6 +41,7 @@ import apps.ahqmrf.mock.activity.SettingsActivity;
 import apps.ahqmrf.mock.activity.SignInActivity;
 import apps.ahqmrf.mock.activity.UserActivity;
 import apps.ahqmrf.mock.adapter.UserListAdapter;
+import apps.ahqmrf.mock.service.LocationUpdateService;
 import apps.ahqmrf.mock.util.Const;
 import apps.ahqmrf.mock.util.Utility;
 import butterknife.BindView;
@@ -77,14 +78,6 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
         trigger(MyLocationActivity.class);
     }
 
-    @BindView(R.id.image_chat)
-    protected ImageView mImageChat;
-
-    @OnClick(R.id.image_chat)
-    public void showChat() {
-        trigger(ConversationActivity.class);
-    }
-
     @BindView(R.id.image_friends)
     protected ImageView mImageFriends;
 
@@ -111,7 +104,7 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
     protected boolean            wasSearchClicked;
     protected DatabaseReference  tempRef;
     protected ValueEventListener notificationListener;
-    protected DatabaseReference  refNotification, refOnlineStatus;
+    protected DatabaseReference  refNotification;
     protected int totalNotifications = 0;
 
     @Override
@@ -119,10 +112,14 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
         super.onCreate(savedInstanceState);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+        boolean serviceStarted = Utility.getBoolean(this, Const.Keys.SERVICE_STARTED);
+        if(!serviceStarted) {
+            Utility.put(this, Const.Keys.SERVICE_STARTED, true);
+            startService(new Intent(this, LocationUpdateService.class));
+        }
         String username = Utility.getString(this, Const.Keys.USERNAME);
         totalNotifications = Utility.getInteger(this, Const.Keys.NOTIFICATION_COUNT);
         refNotification = FirebaseDatabase.getInstance().getReference(Const.Route.NOTIFICATION).child(username);
-        refOnlineStatus = FirebaseDatabase.getInstance().getReference(Const.Route.ONLINE_STATUS).child(username);
         notificationListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -267,7 +264,11 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
         }
         if (itemId == R.id.menu_item_logout) {
             Utility.put(this, Const.Keys.LOGGED_IN, false);
+            if(FirebaseAuth.getInstance() != null) FirebaseAuth.getInstance().signOut();
             finishAffinity();
+            if(!Utility.getBoolean(this, Const.Keys.SERVICE_STARTED)) {
+                startService(new Intent(this, LocationUpdateService.class));
+            }
             trigger(SignInActivity.class);
         }
 
@@ -290,13 +291,11 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
     protected void onResume() {
         super.onResume();
         refNotification.addValueEventListener(notificationListener);
-        refOnlineStatus.setValue(Const.Keys.ONLINE);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        refOnlineStatus.setValue(Const.Keys.OFFLINE);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package apps.ahqmrf.mock.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
@@ -19,6 +20,7 @@ import java.util.Map;
 import apps.ahqmrf.mock.BaseActivity;
 import apps.ahqmrf.mock.R;
 import apps.ahqmrf.mock.User;
+import apps.ahqmrf.mock.adapter.FriendListAdapter;
 import apps.ahqmrf.mock.adapter.NotificationListAdapter;
 import apps.ahqmrf.mock.adapter.UserListAdapter;
 import apps.ahqmrf.mock.util.Const;
@@ -27,7 +29,7 @@ import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class FriendsListActivity extends BaseActivity {
+public class FriendsListActivity extends BaseActivity implements FriendListAdapter.FriendClickCallback {
     @BindString(R.string.title_my_friends)
     String title;
     private ArrayList<User> mItems;
@@ -94,8 +96,28 @@ public class FriendsListActivity extends BaseActivity {
 
         mLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(mLayoutManager);
-        UserListAdapter adapter = new UserListAdapter(this, this, mItems);
+        FriendListAdapter adapter = new FriendListAdapter(this, this, mItems);
         recyclerView.setAdapter(adapter);
         if(mItems.isEmpty()) noFriends.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onFriendClick(User user) {
+        onUserClick(user);
+    }
+
+    @Override
+    public void onChatClick(User user) {
+        Intent intent = new Intent(this, ChatActivity.class);
+        intent.putExtra(Const.Keys.USER, user);
+        startActivity(intent);
+    }
+
+    @Override
+    public void onMapClick(User user) {
+        Intent intent = new Intent(this, TrackerActivity.class);
+        intent.putExtra(Const.Keys.USER, user);
+        startActivity(intent);
+        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
     }
 }

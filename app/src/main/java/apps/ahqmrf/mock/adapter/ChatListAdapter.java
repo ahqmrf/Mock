@@ -30,7 +30,6 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
     private String imageUrl;
 
     private int SENDER = 0;
-    private int last = -1;
 
     public ChatListAdapter(Context mContext, ArrayList<Message> mItems, String imageUrl) {
         this.mContext = mContext;
@@ -43,10 +42,10 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
     public ChatListAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if(viewType == SENDER) {
             View view = LayoutInflater.from(mContext).inflate(R.layout.list_item_chat_sender, parent, false);
-            return new ViewHolder(view, imageUrl);
+            return new ViewHolder(view);
         }
         View view = LayoutInflater.from(mContext).inflate(R.layout.list_item_chat_receive, parent, false);
-        return new ViewHolder(view, imageUrl);
+        return new ViewHolder(view);
     }
 
     @Override
@@ -54,6 +53,10 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
         Message msg = mItems.get(position);
         holder.msg.setText(msg.getText());
         holder.time.setText(msg.getTime());
+        if(getItemViewType(position) == SENDER) {
+            if(msg.isSeen()) Utility.loadImage(imageUrl, holder.imageView);
+            else holder.imageView.setImageResource(R.drawable.ic_check_black_24dp);
+        } else Utility.loadImage(imageUrl, holder.imageView);
 
         if(msg.isLast()) {
             holder.imageView.setVisibility(View.VISIBLE);
@@ -80,10 +83,9 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
         @BindView(R.id.image_main)
         ImageView imageView;
 
-        public ViewHolder(View itemView, String imageUrl) {
+        public ViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
-            Utility.loadImage(imageUrl, imageView);
         }
     }
 }

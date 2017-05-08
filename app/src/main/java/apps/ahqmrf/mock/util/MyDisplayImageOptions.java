@@ -33,9 +33,9 @@ public class MyDisplayImageOptions {
     public DisplayImageOptions getDisplayImageOptions() {
         if(displayImageOptions == null) {
             displayImageOptions = new DisplayImageOptions.Builder()
-                    .showImageForEmptyUri(R.drawable.account_pp_placeholder)
-                    .showImageOnFail(R.drawable.account_pp_placeholder)
-                    .showImageOnLoading(R.drawable.account_pp_placeholder)
+                    .showImageForEmptyUri(R.drawable.account_placeholder)
+                    .showImageOnFail(R.drawable.account_placeholder)
+                    .showImageOnLoading(R.drawable.account_placeholder)
                     .cacheInMemory(true)
                     .cacheOnDisk(true)
                     .imageScaleType(ImageScaleType.EXACTLY)

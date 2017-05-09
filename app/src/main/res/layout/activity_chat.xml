@@ -12,17 +12,17 @@
         android:id="@+id/app_toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        app:titleTextAppearance="@style/Toolbar.TitleText"
         android:background="?attr/colorPrimary"
-        app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+        app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:titleTextAppearance="@style/Toolbar.TitleText">
 
         <ImageView
             android:id="@+id/image_online_status"
             android:layout_width="56dp"
             android:layout_height="match_parent"
+            android:layout_gravity="end"
             android:padding="16dp"
             android:src="@drawable/ic_dot_black"
-            android:layout_gravity="end"
             android:tint="@color/whitey_grey"/>
     </android.support.v7.widget.Toolbar>
 
@@ -62,19 +62,28 @@
             android:id="@+id/input_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/line"
+            android:layout_below="@+id/image_insert"
             android:layout_toStartOf="@id/image_send"
             android:background="@android:color/transparent"
             android:gravity="bottom"
             android:hint="@string/hint_write_a_message"
             android:inputType="textMultiLine"
             android:maxLines="3"
-            android:minLines="2"
             android:padding="8dp"
             android:src="@drawable/ic_send_black_24dp"
             android:textColor="@color/black"
             android:textColorHint="@color/grey"
             android:textSize="16sp"/>
+
+        <ImageView
+            android:id="@+id/image_insert"
+            style="@style/ClickableView"
+            android:layout_below="@id/line"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:padding="8dp"
+            android:tint="@color/grey"
+            android:src="@drawable/ic_image_black_24dp"/>
 
     </RelativeLayout>
 </RelativeLayout>

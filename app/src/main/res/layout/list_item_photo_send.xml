@@ -34,7 +34,8 @@
             android:layout_height="300dp"
             android:layout_gravity="end"
             android:layout_marginStart="56dp"
-            android:background="?attr/selectableItemBackground"
+            android:background="@drawable/button_ripple"
+            android:padding="2dp"
             android:clickable="true">
 
             <ImageView

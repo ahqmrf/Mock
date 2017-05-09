@@ -272,5 +272,19 @@ public class ChatListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             super(view);
             ButterKnife.bind(this, view);
         }
+
+        @OnClick(R.id.image_photo)
+        void onPhotoClick() {
+            int pos = getAdapterPosition();
+            Message msg = (Message) mItems.get(pos);
+            msg.setClicked(!msg.isClicked());
+            notifyItemChanged(pos);
+            if (prev != -1 && prev != pos) {
+                msg = (Message) mItems.get(prev);
+                msg.setClicked(false);
+                notifyItemChanged(prev);
+            }
+            prev = pos;
+        }
     }
 }

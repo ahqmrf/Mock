@@ -1,8 +1,15 @@
 package apps.ahqmrf.mock.activity;
 
+import android.Manifest;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -15,6 +22,8 @@ import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.ImageView;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -22,6 +31,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.util.ArrayList;
 
@@ -327,4 +339,117 @@ public class ChatActivity extends AppCompatActivity {
             msgInput.setText("");
         }
     }
+
+    @OnClick(R.id.image_insert)
+    public void checkReadExternalStoragePermission() {
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (ContextCompat.checkSelfPermission(this,
+                    Manifest.permission.READ_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED) {
+
+                if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                        Manifest.permission.READ_EXTERNAL_STORAGE)) {
+
+                } else {
+
+                    ActivityCompat.requestPermissions(this,
+                            new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                            Const.RequestCodes.READ_EXTERNAL_STORAGE);
+                }
+            } else {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                        Const.RequestCodes.READ_EXTERNAL_STORAGE);
+            }
+        } else {
+
+            openImageGallery();
+        }
+    }
+
+    private void openImageGallery() {
+        Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        intent.setType("image/*");
+        if (getPackageManager().resolveActivity(intent, 0) != null) {
+            startActivityForResult(Intent.createChooser(intent, "Select Picture"), Const.RequestCodes.REQUEST_BROWSE_GALLERY);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case Const.RequestCodes.READ_EXTERNAL_STORAGE: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    openImageGallery();
+
+                } else {
+                    Utility.showToast(this, "Permission required to select media");
+                }
+                break;
+            }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == Const.RequestCodes.REQUEST_BROWSE_GALLERY && resultCode == RESULT_OK) {
+            Uri uri = data.getData();
+            if (null != uri) {
+                uploadImage(uri);
+            }
+        }
+    }
+
+    private void uploadImage(Uri uri) {
+        String path = Utility.getChatNode(user, self);
+        final StorageReference photoStorage = FirebaseStorage.getInstance().getReference().child(path).child(uri.getLastPathSegment());
+        photoStorage.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                photoStorage.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri uri) {
+                        Utility.showToast(getApplicationContext(), "Uploaded successfully");
+                        sendImage(uri.toString());
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+
+                    }
+                });
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Utility.showToast(getApplicationContext(), "Failed to upload photo");
+            }
+        });
+    }
+
+    private void sendImage(String imageUrl) {
+        Time time = Utility.getCurrentTime();
+        String day = time.getDate();
+        String stamp = Utility.get12HourTimeStamp(time);
+        Message msg =
+                new MessageBuilder()
+                        .setText("")
+                        .setDay(day)
+                        .setTime(stamp)
+                        .setSender(self.getUsername())
+                        .setReceiver(user.getUsername())
+                        .setSeen(false)
+                        .setType(Const.Keys.PHOTO)
+                        .setId(-1)
+                        .setLast(true)
+                        .setClicked(false)
+                        .setImageUrl(imageUrl)
+                        .setSeenDay("")
+                        .setSeenTime("")
+                        .build();
+
+        refMsg.push().setValue(msg);
+    }
+
 }

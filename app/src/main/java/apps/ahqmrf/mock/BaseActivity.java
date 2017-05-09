@@ -191,7 +191,7 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
 
     private void createMessageNotification(Message value) {
         Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-        v.vibrate(300);
+        v.vibrate(100);
         String msg = value.getText();
         if(value.getType().equals(Const.Keys.PHOTO)) msg = "Sent you a photo";
         Notification mBuilder =
@@ -207,6 +207,8 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
     }
 
     protected void createNotification() {
+        Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        v.vibrate(100);
         Intent intent = new Intent(this, NotificationActivity.class);
         int requestID = (int) System.currentTimeMillis(); //unique requestID to differentiate between various notification with same NotifId
         int flags = PendingIntent.FLAG_CANCEL_CURRENT; // cancel old intent and create new one
@@ -316,6 +318,8 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
         }
         if (itemId == R.id.menu_item_logout) {
             Utility.put(this, Const.Keys.LOGGED_IN, false);
+            refNewMsg.removeEventListener(newMsgListener);
+            refNotification.removeEventListener(notificationListener);
             if(FirebaseAuth.getInstance() != null) FirebaseAuth.getInstance().signOut();
             finishAffinity();
             if(!Utility.getBoolean(this, Const.Keys.SERVICE_STARTED)) {
@@ -349,6 +353,7 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
     @Override
     protected void onPause() {
         super.onPause();
+        refNewMsg.removeEventListener(newMsgListener);
     }
 
     @Override

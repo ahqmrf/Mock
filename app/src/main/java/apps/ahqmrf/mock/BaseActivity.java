@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.NotificationCompat;
@@ -25,6 +26,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -104,7 +106,8 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
     protected boolean            wasSearchClicked;
     protected DatabaseReference  tempRef;
     protected ValueEventListener notificationListener;
-    protected DatabaseReference  refNotification;
+    protected ChildEventListener newMsgListener;
+    protected DatabaseReference  refNotification, refNewMsg;
     protected int totalNotifications = 0;
 
     @Override
@@ -120,6 +123,7 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
         String username = Utility.getString(this, Const.Keys.USERNAME);
         totalNotifications = Utility.getInteger(this, Const.Keys.NOTIFICATION_COUNT);
         refNotification = FirebaseDatabase.getInstance().getReference(Const.Route.NOTIFICATION).child(username);
+        refNewMsg = FirebaseDatabase.getInstance().getReference(Const.Route.LAST_MESSAGE).child(username);
         notificationListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -152,6 +156,54 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
                 Utility.showToast(getApplicationContext(), "Failed to retrieve notification!");
             }
         };
+
+        newMsgListener = new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                Message message = dataSnapshot.getValue(Message.class);
+                if(Utility.getInteger(getApplicationContext(), message.getSender()) != message.getId()) {
+                    createMessageNotification(message);
+                    Utility.put(getApplicationContext(), message.getSender(), message.getId());
+                }
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                createMessageNotification(dataSnapshot.getValue(Message.class));
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+    }
+
+    private void createMessageNotification(Message value) {
+        Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        v.vibrate(300);
+        String msg = value.getText();
+        if(value.getType().equals(Const.Keys.PHOTO)) msg = "Sent you a photo";
+        Notification mBuilder =
+                new NotificationCompat.Builder(this)
+                        .setSmallIcon(R.mipmap.ic_launcher)
+                        .setContentTitle(value.getSender())
+                        .setContentText(msg)
+                        .setAutoCancel(true)
+                        .build();
+        NotificationManager mNotificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotificationManager.notify(0, mBuilder);
     }
 
     protected void createNotification() {
@@ -291,6 +343,7 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
     protected void onResume() {
         super.onResume();
         refNotification.addValueEventListener(notificationListener);
+        refNewMsg.addChildEventListener(newMsgListener);
     }
 
     @Override

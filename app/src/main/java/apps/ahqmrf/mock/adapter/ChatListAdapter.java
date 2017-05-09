@@ -38,6 +38,8 @@ public class ChatListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private final int RECEIVER_PHOTO = 4;
     private final int TYPING         = 5;
 
+    private int sent = -1;
+
     public ChatListAdapter(Context mContext, ArrayList<Object> mItems, String imageUrl) {
         this.mContext = mContext;
         this.mItems = mItems;
@@ -103,15 +105,18 @@ public class ChatListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private void onBindSendTextViewHolder(MessageViewHolder holder, Message message) {
         holder.msg.setText(message.getText());
         holder.time.setText(message.getTime());
-        if (message.isLast()) {
+        if (message.isLast() && message.getId() >= sent) {
             holder.imageView.setVisibility(View.VISIBLE);
+            sent = message.getId();
         } else holder.imageView.setVisibility(View.INVISIBLE);
+
         if (message.isSeen()) {
             Utility.loadImage(imageUrl, holder.imageView);
             holder.seenTime.setText("Seen at " + message.getSeenTime());
         } else {
             holder.imageView.setImageResource(R.drawable.ic_check_black_24dp);
             holder.seenTime.setText("Not seen yet");
+            holder.imageView.setVisibility(View.VISIBLE);
         }
 
         if (message.isClicked()) {
@@ -129,8 +134,9 @@ public class ChatListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         Utility.loadImage(message.getImageUrl(), holder.photo, holder.progress);
         holder.time.setText(message.getTime());
 
-        if (message.isLast()) {
+        if (message.isLast() && message.getId() >= sent) {
             holder.imageView.setVisibility(View.VISIBLE);
+            sent = message.getId();
         } else holder.imageView.setVisibility(View.INVISIBLE);
 
 
@@ -140,6 +146,7 @@ public class ChatListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         } else {
             holder.imageView.setImageResource(R.drawable.ic_check_black_24dp);
             holder.seenTime.setText("Not seen yet");
+            holder.imageView.setVisibility(View.VISIBLE);
         }
 
 

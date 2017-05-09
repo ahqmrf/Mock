@@ -74,6 +74,7 @@ public class ChatActivity extends AppCompatActivity {
     private DatabaseReference  refType;
     private DatabaseReference  refTypeUser;
     private DatabaseReference  refMsg;
+    private DatabaseReference  lastMsg;
     private ValueEventListener eventListener, typeListener;
     private ChildEventListener msgListener;
     private ChatListAdapter    adapter;
@@ -110,6 +111,8 @@ public class ChatActivity extends AppCompatActivity {
         );
 
         String path = Utility.getChatNode(user, self);
+
+        lastMsg = FirebaseDatabase.getInstance().getReference(Const.Route.LAST_MESSAGE).child(user.getUsername()).child(self.getUsername());
 
         refOnlineStatus = FirebaseDatabase.getInstance().getReference(Const.Route.ONLINE_STATUS).child(self.getUsername()).child(user.getUsername());
         refOnlineStatus.setValue(Const.Keys.ONLINE);
@@ -337,6 +340,7 @@ public class ChatActivity extends AppCompatActivity {
 
             refMsg.push().setValue(msg);
             msgInput.setText("");
+            lastMsg.setValue(msg);
         }
     }
 
@@ -450,6 +454,7 @@ public class ChatActivity extends AppCompatActivity {
                         .build();
 
         refMsg.push().setValue(msg);
+        lastMsg.setValue(msg);
     }
 
 }

@@ -12,7 +12,6 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 
@@ -31,6 +30,7 @@ import apps.ahqmrf.mock.R;
 import apps.ahqmrf.mock.Time;
 import apps.ahqmrf.mock.User;
 import apps.ahqmrf.mock.adapter.ChatListAdapter;
+import apps.ahqmrf.mock.model.MessageBuilder;
 import apps.ahqmrf.mock.util.Const;
 import apps.ahqmrf.mock.util.Utility;
 import butterknife.BindView;
@@ -57,23 +57,23 @@ public class ChatActivity extends AppCompatActivity {
 
 
     private User self, user;
-    private DatabaseReference refOnlineStatus;
-    private DatabaseReference userOnlineStatus;
-    private DatabaseReference refType;
-    private DatabaseReference refTypeUser;
-    private DatabaseReference refMsg;
+    private DatabaseReference  refOnlineStatus;
+    private DatabaseReference  userOnlineStatus;
+    private DatabaseReference  refType;
+    private DatabaseReference  refTypeUser;
+    private DatabaseReference  refMsg;
     private ValueEventListener eventListener, typeListener;
     private ChildEventListener msgListener;
-    private ChatListAdapter adapter;
-    private ArrayList<Object> msgs = new ArrayList<>();
-    private int last = -1;
-    private int sentLast = -1;
-    private int count = 0;
+    private ChatListAdapter    adapter;
+    private ArrayList<Object> msgs     = new ArrayList<>();
+    private int               last     = -1;
+    private int               sentLast = -1;
+    private int               count    = 0;
     private Query query;
 
-    long delay = 1000; // 1 seconds after user stops typing
-    long last_text_edit = 0;
-    Handler handler = new Handler();
+    long    delay          = 1000; // 1 seconds after user stops typing
+    long    last_text_edit = 0;
+    Handler handler        = new Handler();
 
     private Runnable input_finish_checker = new Runnable() {
         public void run() {
@@ -132,18 +132,23 @@ public class ChatActivity extends AppCompatActivity {
         msgListener = new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                if(dataSnapshot != null && dataSnapshot.getValue() != null) {
+                if (dataSnapshot != null && dataSnapshot.getValue() != null) {
                     Message model = dataSnapshot.getValue(Message.class);
-                    if(model.getId() == -1) {
+                    if (model.getId() == -1) {
                         model.setId(msgs.size() - 1);
                         dataSnapshot.getRef().setValue(model);
                     }
-                    if(model.getSender().equals(user.getUsername())) {
+                    if (model.getSender().equals(user.getUsername())) {
                         model.setSeen(true);
+                        Time time = Utility.getCurrentTime();
+                        String day = time.getDate();
+                        String stamp = Utility.get12HourTimeStamp(time);
+                        model.setSeenDay(day);
+                        model.setSeenTime(stamp);
                         dataSnapshot.getRef().setValue(model);
                         model.setLast(true);
                         int pos = msgs.size() - 1;
-                        if(last != -1 && pos - last == 1) {
+                        if (last != -1 && pos - last == 1) {
                             Message msg = (Message) msgs.get(last);
                             msg.setLast(false);
                             msgs.set(last, msg);
@@ -153,8 +158,8 @@ public class ChatActivity extends AppCompatActivity {
                     } else {
                         model.setLast(true);
                         int pos = msgs.size() - 1;
-                        if(sentLast != -1) {
-                            Message msg = (Message)msgs.get(sentLast);
+                        if (sentLast != -1) {
+                            Message msg = (Message) msgs.get(sentLast);
                             msg.setLast(false);
                             msgs.set(sentLast, msg);
                             adapter.notifyItemChanged(sentLast);
@@ -169,9 +174,9 @@ public class ChatActivity extends AppCompatActivity {
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                if(dataSnapshot != null && dataSnapshot.getValue() != null) {
+                if (dataSnapshot != null && dataSnapshot.getValue() != null) {
                     Message model = dataSnapshot.getValue(Message.class);
-                    if(model.getSender().equals(self.getUsername())) {
+                    if (model.getSender().equals(self.getUsername())) {
                         msgs.set(model.getId(), model);
                         adapter.notifyItemChanged(model.getId());
                     }
@@ -205,8 +210,7 @@ public class ChatActivity extends AppCompatActivity {
                             msgs.set(msgs.size() - 1, true);
                             adapter.notifyItemChanged(msgs.size() - 1);
                             chatView.scrollToPosition(msgs.size() - 1);
-                        }
-                        else {
+                        } else {
                             msgs.set(msgs.size() - 1, false);
                             adapter.notifyItemChanged(msgs.size() - 1);
                         }
@@ -237,7 +241,6 @@ public class ChatActivity extends AppCompatActivity {
         }
 
 
-
         msgInput.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -254,7 +257,7 @@ public class ChatActivity extends AppCompatActivity {
                 if (s.length() > 0) {
                     last_text_edit = System.currentTimeMillis();
                     handler.postDelayed(input_finish_checker, delay);
-                }  else refType.setValue(false);
+                } else refType.setValue(false);
             }
         });
 
@@ -299,12 +302,28 @@ public class ChatActivity extends AppCompatActivity {
     void sendMessage() {
         refType.setValue(false);
         String text = msgInput.getText().toString();
-        if(!TextUtils.isEmpty(text)) {
+        if (!TextUtils.isEmpty(text)) {
             Time time = Utility.getCurrentTime();
             String day = time.getDate();
             String stamp = Utility.get12HourTimeStamp(time);
-            Message message = new Message(self.getUsername(), user.getUsername(), day, stamp, text, true, false, -1);
-            refMsg.push().setValue(message);
+            Message msg =
+                    new MessageBuilder()
+                            .setText(text)
+                            .setDay(day)
+                            .setTime(stamp)
+                            .setSender(self.getUsername())
+                            .setReceiver(user.getUsername())
+                            .setSeen(false)
+                            .setType(Const.Keys.TEXT)
+                            .setId(-1)
+                            .setLast(true)
+                            .setClicked(false)
+                            .setImageUrl("")
+                            .setSeenDay("")
+                            .setSeenTime("")
+                            .build();
+
+            refMsg.push().setValue(msg);
             msgInput.setText("");
         }
     }

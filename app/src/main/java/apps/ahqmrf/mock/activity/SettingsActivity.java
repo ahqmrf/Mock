@@ -1,8 +1,10 @@
 package apps.ahqmrf.mock.activity;
 
 import android.os.Bundle;
+import android.support.v7.widget.SwitchCompat;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -21,12 +23,13 @@ public class SettingsActivity extends BaseActivity {
     @BindString(R.string.title_settings)
     String title;
 
-    @BindView(R.id.image_main)      ImageView mImageView;
-    @BindView(R.id.text_name)       TextView  mName;
-    @BindView(R.id.layout_progress) View      progressLayout;
-    @BindView(R.id.text_email)      TextView  mEmail;
-    @BindView(R.id.text_full_name)  TextView  mFullName;
-    @BindView(R.id.text_username)   TextView  mUsername;
+    @BindView(R.id.image_main)      ImageView    mImageView;
+    @BindView(R.id.text_name)       TextView     mName;
+    @BindView(R.id.layout_progress) View         progressLayout;
+    @BindView(R.id.text_email)      TextView     mEmail;
+    @BindView(R.id.text_full_name)  TextView     mFullName;
+    @BindView(R.id.text_username)   TextView     mUsername;
+    @BindView(R.id.switchCompat)    SwitchCompat switchCompat;
 
     private StorageReference mStorage = FirebaseStorage.getInstance().getReference();
     private String username, imageUrl, fullName, email;
@@ -60,5 +63,12 @@ public class SettingsActivity extends BaseActivity {
         } else {
             Utility.loadImage(imageUrl, mImageView, progressLayout);
         }
+
+        switchCompat.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                Utility.put(getApplicationContext(), Const.Keys.NOTIFICATION_MODE, isChecked);
+            }
+        });
     }
 }

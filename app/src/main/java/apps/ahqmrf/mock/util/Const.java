@@ -54,6 +54,7 @@ public final class Const {
         public static final String TEXT               = "text";
         public static final String SEEN               = "seen";
         public static final String PHOTO              = "photo";
+        public static final String NOTIFICATION_MODE  = "notificationMode";
     }
 
     public static final String PREF_NAME = "mock.pref";

@@ -62,10 +62,6 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
     @BindView(R.id.layout_progress_recycler)
     protected View progressList;
 
-    @Nullable
-    @BindView(R.id.fab_check_in)
-    protected FloatingActionButton fab;
-
     @BindView(R.id.text_notification)
     protected TextView notificationIcon;
 
@@ -136,7 +132,7 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
                         Utility.putInt(getApplicationContext(), Const.Keys.NOTIFICATION_COUNT, count);
                         if (totalNotifications < count) {
                             totalNotifications = count;
-                            createNotification();
+                            if(Utility.getBoolean(getApplicationContext(), Const.Keys.NOTIFICATION_MODE))  createNotification();
                         }
                     } else {
                         notificationIcon.setVisibility(View.GONE);
@@ -162,14 +158,14 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 Message message = dataSnapshot.getValue(Message.class);
                 if(Utility.getInteger(getApplicationContext(), message.getSender()) != message.getId()) {
-                    createMessageNotification(message);
+                    if(Utility.getBoolean(getApplicationContext(), Const.Keys.NOTIFICATION_MODE)) createMessageNotification(message);
                     Utility.put(getApplicationContext(), message.getSender(), message.getId());
                 }
             }
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                createMessageNotification(dataSnapshot.getValue(Message.class));
+                if(Utility.getBoolean(getApplicationContext(), Const.Keys.NOTIFICATION_MODE))  createMessageNotification(dataSnapshot.getValue(Message.class));
             }
 
             @Override
@@ -280,14 +276,12 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
             @Override
             public boolean onMenuItemActionExpand(MenuItem item) {
                 recyclerView.setVisibility(View.VISIBLE);
-                if (fab != null) fab.setVisibility(View.INVISIBLE);
                 return true;
             }
 
             @Override
             public boolean onMenuItemActionCollapse(MenuItem item) {
                 recyclerView.setVisibility(View.GONE);
-                if (fab != null) fab.setVisibility(View.VISIBLE);
                 return true;
             }
         });
@@ -320,6 +314,7 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
             Utility.put(this, Const.Keys.LOGGED_IN, false);
             refNewMsg.removeEventListener(newMsgListener);
             refNotification.removeEventListener(notificationListener);
+            stopService(new Intent(this, LocationUpdateService.class));
             if(FirebaseAuth.getInstance() != null) FirebaseAuth.getInstance().signOut();
             finishAffinity();
             if(!Utility.getBoolean(this, Const.Keys.SERVICE_STARTED)) {
@@ -353,7 +348,6 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
     @Override
     protected void onPause() {
         super.onPause();
-        refNewMsg.removeEventListener(newMsgListener);
     }
 
     @Override

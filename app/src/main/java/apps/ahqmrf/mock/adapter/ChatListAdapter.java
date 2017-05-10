@@ -19,6 +19,7 @@ import apps.ahqmrf.mock.util.Utility;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.OnLongClick;
 
 /**
  * Created by Lenovo on 5/4/2017.
@@ -30,6 +31,7 @@ public class ChatListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private ArrayList<Object> mItems;
     private String            username;
     private String            imageUrl;
+    private Callback mCallback;
     private int prev = -1;
 
     private final int SENDER_TEXT    = 1;
@@ -40,11 +42,16 @@ public class ChatListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     private int sent = -1;
 
+    public interface Callback {
+        void onImageClick(String imageUrl);
+    }
+
     public ChatListAdapter(Context mContext, ArrayList<Object> mItems, String imageUrl) {
         this.mContext = mContext;
         this.mItems = mItems;
         this.username = Utility.getString(mContext, Const.Keys.USERNAME);
         this.imageUrl = imageUrl;
+        this.mCallback = (Callback) mContext;
     }
 
     @Override
@@ -280,8 +287,8 @@ public class ChatListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             ButterKnife.bind(this, view);
         }
 
-        @OnClick(R.id.image_photo)
-        void onPhotoClick() {
+        @OnLongClick(R.id.image_photo)
+        boolean onPhotoLongClick() {
             int pos = getAdapterPosition();
             Message msg = (Message) mItems.get(pos);
             msg.setClicked(!msg.isClicked());
@@ -292,6 +299,16 @@ public class ChatListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 notifyItemChanged(prev);
             }
             prev = pos;
+            return true;
+        }
+
+        @OnClick(R.id.image_photo)
+        void onPhotoClick() {
+            if(mCallback != null) {
+                int pos = getAdapterPosition();
+                Message msg = (Message) mItems.get(pos);
+                mCallback.onImageClick(msg.getImageUrl());
+            }
         }
     }
 }

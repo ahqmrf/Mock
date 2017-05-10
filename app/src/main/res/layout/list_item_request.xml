@@ -19,7 +19,7 @@
             android:layout_alignParentTop="true"
             style="@style/ClickableView"
             android:scaleType="centerCrop"
-            tools:src="@drawable/pp"/>
+            android:src="@drawable/account_placeholder"/>
 
         <LinearLayout
             android:id="@+id/layout_progress"

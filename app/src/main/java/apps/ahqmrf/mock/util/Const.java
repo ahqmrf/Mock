@@ -48,13 +48,16 @@ public final class Const {
         public static final String MESSAGES           = "messages";
         public static final String TIME               = "time";
         public static final String DATE               = "day";
-        public static final String MESSAGE            = "message";
-        public static final String SENDER             = "sender";
-        public static final String RECEIVER           = "receiver";
-        public static final String TEXT               = "text";
-        public static final String SEEN               = "seen";
-        public static final String PHOTO              = "photo";
-        public static final String NOTIFICATION_MODE  = "notificationMode";
+        public static final String MESSAGE           = "message";
+        public static final String SENDER            = "sender";
+        public static final String RECEIVER          = "receiver";
+        public static final String TEXT              = "text";
+        public static final String SEEN              = "seen";
+        public static final String PHOTO             = "photo";
+        public static final String NOTIFICATION_MODE = "notificationMode";
+        public static final String IMAGE_URL         = "image_URL";
+        public static final String CHAT_LIST         = "chatList";
+        public static final String LAST_COUNT        = "LastCount";
     }
 
     public static final String PREF_NAME = "mock.pref";

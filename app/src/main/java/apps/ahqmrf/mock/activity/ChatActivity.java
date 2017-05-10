@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -22,6 +23,7 @@ import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.ImageView;
 
+import com.binjar.prefsdroid.Preference;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.ChildEventListener;
@@ -49,7 +51,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class ChatActivity extends AppCompatActivity {
+public class ChatActivity extends AppCompatActivity implements ChatListAdapter.Callback{
 
     @Nullable
     @BindView(R.id.app_toolbar)
@@ -81,8 +83,10 @@ public class ChatActivity extends AppCompatActivity {
     private ArrayList<Object> msgs     = new ArrayList<>();
     private int               last     = -1;
     private int               sentLast = -1;
-    private int               count    = 0;
+    private int               count    = -1;
     private Query query;
+    private LinearLayoutManager manager;
+    private Parcelable chatState;
 
     long    delay          = 1000; // 1 seconds after user stops typing
     long    last_text_edit = 0;
@@ -151,7 +155,11 @@ public class ChatActivity extends AppCompatActivity {
                     Message model = dataSnapshot.getValue(Message.class);
                     if (model.getId() == -1) {
                         model.setId(msgs.size() - 1);
+                        count = model.getId();
                         dataSnapshot.getRef().setValue(model);
+                    } else {
+                        if(model.getId() <= count) return;
+                        count = model.getId();
                     }
                     if (model.getSender().equals(user.getUsername())) {
                         model.setSeen(true);
@@ -276,7 +284,7 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
 
-        LinearLayoutManager manager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        manager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         manager.setStackFromEnd(true);
         chatView.setLayoutManager(manager);
         adapter = new ChatListAdapter(this, msgs, user.getImageUrl());
@@ -301,6 +309,9 @@ public class ChatActivity extends AppCompatActivity {
         refTypeUser.addValueEventListener(typeListener);
         query.addChildEventListener(msgListener);
         refType.setValue(false);
+        if(chatState != null) {
+            manager.onRestoreInstanceState(chatState);
+        }
     }
 
     @Override
@@ -457,4 +468,28 @@ public class ChatActivity extends AppCompatActivity {
         lastMsg.setValue(msg);
     }
 
+    @Override
+    public void onImageClick(String imageUrl) {
+        Intent intent = new Intent(this, ImageFullScreenActivity.class);
+        intent.putExtra(Const.Keys.IMAGE_URL, imageUrl);
+        startActivity(intent);
+        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        chatState = manager.onSaveInstanceState();
+        outState.putParcelable(Const.Keys.CHAT_LIST, chatState);
+        outState.putInt(Const.Keys.LAST_COUNT, count);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        if(savedInstanceState != null) {
+            chatState = savedInstanceState.getParcelable(Const.Keys.CHAT_LIST);
+            count = savedInstanceState.getInt(Const.Keys.LAST_COUNT);
+        }
+    }
 }

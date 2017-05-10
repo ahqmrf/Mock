@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_marginBottom="2dp"
     android:layout_marginEnd="8dp"
     android:layout_marginTop="2dp"
@@ -31,17 +31,25 @@
             tools:text="6:55 PM"/>
 
         <RelativeLayout
-            android:layout_width="200dp"
-            android:layout_height="300dp"
+            android:layout_width="120dp"
+            android:layout_height="180dp"
             android:layout_gravity="end"
             android:layout_marginStart="56dp"
-            android:padding="2dp"
             android:clickable="true">
+
+            <com.makeramen.roundedimageview.RoundedImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clickable="true"
+                android:scaleType="centerCrop"
+                android:src="@drawable/grey_placeholder"
+                app:riv_corner_radius="16dp"/>
 
             <com.makeramen.roundedimageview.RoundedImageView
                 android:id="@+id/image_photo"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_margin="1dp"
                 android:background="?attr/selectableItemBackground"
                 android:clickable="true"
                 android:scaleType="centerCrop"

@@ -133,6 +133,9 @@ public class Utility {
     }
 
     public static void loadImage(String path, ImageView imageView) {
+        if (TextUtils.isEmpty(path)) {
+            return;
+        }
         ImageLoader.getInstance().displayImage(
                 path,
                 imageView,

@@ -38,7 +38,6 @@
             android:layout_marginStart="56dp"
             android:background="?attr/selectableItemBackground"
             android:clickable="true"
-            android:padding="4dp"
             app:cardBackgroundColor="@color/colorPrimary"
             app:cardCornerRadius="16dp">
 
@@ -47,8 +46,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingBottom="4dp"
-                android:paddingEnd="8dp"
-                android:paddingStart="8dp"
+                android:paddingEnd="12dp"
+                android:paddingStart="12dp"
                 android:paddingTop="4dp"
                 android:textColor="@color/white"
                 android:textSize="16sp"

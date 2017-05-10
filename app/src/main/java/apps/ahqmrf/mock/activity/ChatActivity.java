@@ -122,7 +122,7 @@ public class ChatActivity extends AppCompatActivity implements ChatListAdapter.C
         refOnlineStatus.setValue(Const.Keys.ONLINE);
         DatabaseReference refChat = FirebaseDatabase.getInstance().getReference(Const.Route.CHAT).child(path);
         refMsg = refChat.child(Const.Keys.MESSAGES);
-        query = refMsg.limitToLast(100);
+        query = refMsg.limitToLast(1000);
         refType = refChat.child(self.getUsername()).child(Const.Keys.TYPING_STATUS);
         refTypeUser = refChat.child(user.getUsername()).child(Const.Keys.TYPING_STATUS);
         userOnlineStatus = FirebaseDatabase.getInstance().getReference(Const.Route.ONLINE_STATUS).child(user.getUsername()).child(self.getUsername());
@@ -154,8 +154,7 @@ public class ChatActivity extends AppCompatActivity implements ChatListAdapter.C
                 if (dataSnapshot != null && dataSnapshot.getValue() != null) {
                     Message model = dataSnapshot.getValue(Message.class);
                     if (model.getId() == -1) {
-                        model.setId(msgs.size() - 1);
-                        count = model.getId();
+                        model.setId(++count);
                         dataSnapshot.getRef().setValue(model);
                     } else {
                         if(model.getId() <= count) return;
@@ -190,7 +189,7 @@ public class ChatActivity extends AppCompatActivity implements ChatListAdapter.C
                         sentLast = pos;
                     }
                     msgs.add(msgs.size() - 1, model);
-                    chatView.scrollToPosition(msgs.size() - 2);
+                    chatView.smoothScrollToPosition(msgs.size() - 2);
                     adapter.notifyItemInserted(msgs.size() - 2);
                 }
             }
@@ -200,8 +199,16 @@ public class ChatActivity extends AppCompatActivity implements ChatListAdapter.C
                 if (dataSnapshot != null && dataSnapshot.getValue() != null) {
                     Message model = dataSnapshot.getValue(Message.class);
                     if (model.getSender().equals(self.getUsername())) {
-                        msgs.set(model.getId(), model);
-                        adapter.notifyItemChanged(model.getId());
+                        for (int i = 0, size = msgs.size() - 1; i < size; i++) {
+                            if(msgs.get(i) instanceof Message) {
+                                Message message = (Message) msgs.get(i);
+                                if(message.getId() == model.getId()) {
+                                    msgs.set(i, model);
+                                    adapter.notifyItemChanged(i);
+                                    break;
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -232,7 +239,6 @@ public class ChatActivity extends AppCompatActivity implements ChatListAdapter.C
                         if (isTyping) {
                             msgs.set(msgs.size() - 1, true);
                             adapter.notifyItemChanged(msgs.size() - 1);
-                            chatView.scrollToPosition(msgs.size() - 1);
                         } else {
                             msgs.set(msgs.size() - 1, false);
                             adapter.notifyItemChanged(msgs.size() - 1);

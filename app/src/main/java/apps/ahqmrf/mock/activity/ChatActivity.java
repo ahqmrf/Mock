@@ -20,6 +20,7 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 
@@ -66,8 +67,8 @@ public class ChatActivity extends AppCompatActivity implements ChatListAdapter.C
     @BindView(R.id.recycler_chats)
     RecyclerView chatView;
 
-   /* @BindView(R.id.layout_progress)
-    View progressLayout;*/
+    @BindView(R.id.upload_progressbar)
+    View progressLayout;
 
 
     private User self, user;
@@ -423,6 +424,7 @@ public class ChatActivity extends AppCompatActivity implements ChatListAdapter.C
     }
 
     private void uploadImage(Uri uri) {
+        progressLayout.setVisibility(View.VISIBLE);
         String path = Utility.getChatNode(user, self);
         final StorageReference photoStorage = FirebaseStorage.getInstance().getReference().child(path).child(uri.getLastPathSegment());
         photoStorage.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -431,19 +433,21 @@ public class ChatActivity extends AppCompatActivity implements ChatListAdapter.C
                 photoStorage.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
                     public void onSuccess(Uri uri) {
+                        progressLayout.setVisibility(View.GONE);
                         Utility.showToast(getApplicationContext(), "Uploaded successfully");
                         sendImage(uri.toString());
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-
+                        progressLayout.setVisibility(View.GONE);
                     }
                 });
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
+                progressLayout.setVisibility(View.GONE);
                 Utility.showToast(getApplicationContext(), "Failed to upload photo");
             }
         });

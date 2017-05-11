@@ -65,8 +65,13 @@ public class SettingsActivity extends BaseActivity {
             Utility.loadImage(imageUrl, mImageView, progressLayout);
         }
 
-        if(Utility.getBoolean(this, Const.Keys.NOTIFICATION_MODE)) switchCompat.setChecked(true);
-        if(Utility.getBoolean(this, Const.Keys.VIBRATION)) switchVibrate.setChecked(true);
+        if(Utility.getBoolean(this, Const.Keys.NOTIFICATION_MODE)) {
+            switchCompat.setChecked(true);
+            switchVibrate.setClickable(true);
+        } else switchVibrate.setClickable(false);
+        if(Utility.getBoolean(this, Const.Keys.VIBRATION)) {
+            switchVibrate.setChecked(true);
+        }
 
         switchCompat.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -75,7 +80,9 @@ public class SettingsActivity extends BaseActivity {
                 if(!isChecked) {
                     switchVibrate.setChecked(false);
                     Utility.put(getApplicationContext(), Const.Keys.VIBRATION, false);
+                    switchVibrate.setClickable(false);
                 }
+                else switchVibrate.setClickable(true);
             }
         });
 

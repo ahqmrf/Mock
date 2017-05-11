@@ -49,4 +49,5 @@
     <string name="label_no_conversation">No conversation to show</string>
     <string name="label_notification_mode">Notification mode</string>
     <string name="label_uploading_image">Uploading image</string>
+    <string name="label_vibration">Vibration</string>
 </resources>

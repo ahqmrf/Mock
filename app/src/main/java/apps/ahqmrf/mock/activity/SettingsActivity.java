@@ -30,6 +30,7 @@ public class SettingsActivity extends BaseActivity {
     @BindView(R.id.text_full_name)  TextView     mFullName;
     @BindView(R.id.text_username)   TextView     mUsername;
     @BindView(R.id.switchCompat)    SwitchCompat switchCompat;
+    @BindView(R.id.switchVibrate) SwitchCompat switchVibrate;
 
     private StorageReference mStorage = FirebaseStorage.getInstance().getReference();
     private String username, imageUrl, fullName, email;
@@ -64,10 +65,20 @@ public class SettingsActivity extends BaseActivity {
             Utility.loadImage(imageUrl, mImageView, progressLayout);
         }
 
+        if(Utility.getBoolean(this, Const.Keys.NOTIFICATION_MODE)) switchCompat.setChecked(true);
+        if(Utility.getBoolean(this, Const.Keys.VIBRATION)) switchVibrate.setChecked(true);
+
         switchCompat.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 Utility.put(getApplicationContext(), Const.Keys.NOTIFICATION_MODE, isChecked);
+            }
+        });
+
+        switchVibrate.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                Utility.put(getApplicationContext(), Const.Keys.VIBRATION, isChecked);
             }
         });
     }

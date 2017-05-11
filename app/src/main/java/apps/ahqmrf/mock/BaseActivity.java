@@ -112,7 +112,7 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         boolean serviceStarted = Utility.getBoolean(this, Const.Keys.SERVICE_STARTED);
-        if(!serviceStarted) {
+        if (!serviceStarted) {
             Utility.put(this, Const.Keys.SERVICE_STARTED, true);
             startService(new Intent(this, LocationUpdateService.class));
         }
@@ -132,7 +132,8 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
                         Utility.putInt(getApplicationContext(), Const.Keys.NOTIFICATION_COUNT, count);
                         if (totalNotifications < count) {
                             totalNotifications = count;
-                            if(Utility.getBoolean(getApplicationContext(), Const.Keys.NOTIFICATION_MODE))  createNotification();
+                            if (Utility.getBoolean(getApplicationContext(), Const.Keys.NOTIFICATION_MODE))
+                                createNotification();
                         }
                     } else {
                         notificationIcon.setVisibility(View.GONE);
@@ -157,15 +158,17 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 Message message = dataSnapshot.getValue(Message.class);
-                if(Utility.getInteger(getApplicationContext(), message.getSender()) != message.getId()) {
-                    if(Utility.getBoolean(getApplicationContext(), Const.Keys.NOTIFICATION_MODE)) createMessageNotification(message);
+                if (Utility.getInteger(getApplicationContext(), message.getSender()) != message.getId()) {
+                    if (Utility.getBoolean(getApplicationContext(), Const.Keys.NOTIFICATION_MODE))
+                        createMessageNotification(message);
                     Utility.put(getApplicationContext(), message.getSender(), message.getId());
                 }
             }
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                if(Utility.getBoolean(getApplicationContext(), Const.Keys.NOTIFICATION_MODE))  createMessageNotification(dataSnapshot.getValue(Message.class));
+                if (Utility.getBoolean(getApplicationContext(), Const.Keys.NOTIFICATION_MODE))
+                    createMessageNotification(dataSnapshot.getValue(Message.class));
             }
 
             @Override
@@ -186,10 +189,12 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
     }
 
     private void createMessageNotification(Message value) {
-        Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-        v.vibrate(100);
+        if (Utility.getBoolean(this, Const.Keys.VIBRATION)) {
+            Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+            v.vibrate(100);
+        }
         String msg = value.getText();
-        if(value.getType().equals(Const.Keys.PHOTO)) msg = "Sent you a photo";
+        if (value.getType().equals(Const.Keys.PHOTO)) msg = "Sent you a photo";
         Notification mBuilder =
                 new NotificationCompat.Builder(this)
                         .setSmallIcon(R.mipmap.ic_launcher)
@@ -203,8 +208,10 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
     }
 
     protected void createNotification() {
-        Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-        v.vibrate(100);
+        if (Utility.getBoolean(this, Const.Keys.VIBRATION)) {
+            Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+            v.vibrate(100);
+        }
         Intent intent = new Intent(this, NotificationActivity.class);
         int requestID = (int) System.currentTimeMillis(); //unique requestID to differentiate between various notification with same NotifId
         int flags = PendingIntent.FLAG_CANCEL_CURRENT; // cancel old intent and create new one
@@ -315,9 +322,9 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
             refNewMsg.removeEventListener(newMsgListener);
             refNotification.removeEventListener(notificationListener);
             stopService(new Intent(this, LocationUpdateService.class));
-            if(FirebaseAuth.getInstance() != null) FirebaseAuth.getInstance().signOut();
+            if (FirebaseAuth.getInstance() != null) FirebaseAuth.getInstance().signOut();
             finishAffinity();
-            if(!Utility.getBoolean(this, Const.Keys.SERVICE_STARTED)) {
+            if (!Utility.getBoolean(this, Const.Keys.SERVICE_STARTED)) {
                 startService(new Intent(this, LocationUpdateService.class));
             }
             trigger(SignInActivity.class);

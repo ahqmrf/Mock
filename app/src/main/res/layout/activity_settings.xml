@@ -297,6 +297,43 @@
 
             </RelativeLayout>
 
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:layout_marginStart="56dp"
+                android:background="@color/whitey_grey"/>
+
+            <RelativeLayout
+                android:id="@+id/layout_vibration"
+                android:layout_width="match_parent"
+                android:layout_height="72dp"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true">
+
+                <ImageView
+                    android:id="@+id/image_vibration"
+                    android:layout_width="56dp"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:padding="16dp"
+                    android:src="@drawable/ic_vibration_black_24dp"
+                    android:tint="@color/colorPrimary"/>
+
+                <android.support.v7.widget.SwitchCompat
+                    android:id="@+id/switchVibrate"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:paddingEnd="16dp"
+                    android:layout_toEndOf="@id/image_vibration"
+                    android:gravity="center_vertical"
+                    android:text="@string/label_vibration"
+                    android:textColor="@color/black"
+                    android:textSize="16sp"
+                    tools:checked="false"/>
+
+            </RelativeLayout>
+
 
         </LinearLayout>
 

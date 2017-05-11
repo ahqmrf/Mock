@@ -72,6 +72,10 @@ public class SettingsActivity extends BaseActivity {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 Utility.put(getApplicationContext(), Const.Keys.NOTIFICATION_MODE, isChecked);
+                if(!isChecked) {
+                    switchVibrate.setChecked(false);
+                    Utility.put(getApplicationContext(), Const.Keys.VIBRATION, false);
+                }
             }
         });
 
